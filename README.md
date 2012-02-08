@@ -7,7 +7,7 @@ Current implementation thoughts
 Summarised here are the current thoughts on implementation. Class diagrams will be completed at a later date.
 
 Input:
-The framework will provide a generalised interface that input devices will implement. This provides allows the system to gather basic input information such as current movement direction/speed. It will then feed this information to the output module, and in turn to the drone. The system will also provide a mechanism that feeds back video output, gyroscope output etc.
+The framework will provide a generalised interface that input devices will implement. This allows the system to gather basic input information such as current movement direction/speed. It will then feed this information to the output module, and in turn to the drone. The system will also provide a mechanism that feeds back video output, gyroscope output etc.
 
 Output:
 We will write a high level wrapper around the api which makes it easy for us to control the drone. This provides basic movement control for rotation, height adjustment, and movement.
