@@ -1,0 +1,13 @@
+*.vcxproj
+*.filters
+*.user
+*.sln
+*.sdf
+*.suo
+*.cmake
+CMakeCache.txt
+CMakeFiles/
+ipch/
+Debug/
+Release/
+
