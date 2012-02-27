@@ -3,12 +3,15 @@
 # ignore all files by default
 *
 
+# co not ignore code directories
+!input/
+
 # do not ignore all C/++ files
-!.cpp
-!.c
-!.hpp
-!.h
-!.in
+!*.cpp
+!*.c
+!*.hpp
+!*.h
+!*.in
 
 # do not ignore certain files
 !README.md

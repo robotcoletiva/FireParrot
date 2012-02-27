@@ -10,6 +10,10 @@ set(DRONE_HEADERS DroneConfig.h)
 set(DRONE_SOURCES main.cpp)
 source_group(cuardrone FILES ${DRONE_HEADERS} ${DRONE_SOURCES})
 
+set(INPUT_HEADERS input/InputDevice.h input/DummyDevice.h)
+set(INPUT_SOURCES input/DummyDevice.cpp)
+source_group(cuardrone\\input FILES ${INPUT_HEADERS} ${INPUT_SOURCES})
+
 include_directories("${PROJECT_SOURCE_DIR}")
 
 configure_file (
@@ -17,4 +21,5 @@ configure_file (
   "${PROJECT_SOURCE_DIR}/DroneConfig.h"
   )
 
-add_executable(cuardrone ${DRONE_SOURCES} ${DRONE_HEADERS})
+add_executable(cuardrone    ${DRONE_SOURCES} ${DRONE_HEADERS}
+                            ${INPUT_SOURCES} ${INPUT_HEADERS})
