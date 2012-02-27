@@ -15,6 +15,7 @@
  */
 typedef float vec_t;            /* scalar                 */
 typedef vec_t vec2_t[2];        /* two-dimensional vector */
+typedef vec_t vec3_t[3];        /* three-dimension ...    */
 
 namespace cuardrone
 {
@@ -33,14 +34,10 @@ namespace cuardrone
              */
             virtual float GetThrust() = 0; /* Pure virtual */
             /**
-             * Returns a normalized 2d vector which represents direction
-             * TODO: Come up with a better name?
+             * Returns a normalized 3d vector which represents velocity
+             * X = pitch, Y = roll, Z = yaw
              */
-            virtual vec2_t* GetDirection() = 0; /* Pure virtual */
-            /**
-             * Returns a float between -1 and 1 which represents rotation (yaw)
-             */
-            virtual float GetRotation() = 0; /* Pure virtual */
+            virtual vec3_t* GetVelocity() = 0; /* Pure virtual */
         };
     }
 }

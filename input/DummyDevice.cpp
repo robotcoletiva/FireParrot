@@ -7,8 +7,9 @@ namespace cuardrone
         DummyDevice::DummyDevice()
         {
             m_thrust = 0.25f; // 1/4 speed
-            m_direction[0] = 0.0f; m_direction[1] = 1.0f;  // Forward at full velocity
-            m_rotation = 0.1f; // Slow clockwise rotation
+            m_velocity[0] = 0.0f; 
+            m_velocity[1] = 1.0f;  // Forward at full velocity
+            m_velocity[2] = 0.1f; // Slow clockwise rotation
         }
 
         DummyDevice::~DummyDevice()
@@ -21,14 +22,9 @@ namespace cuardrone
             return m_thrust;
         }
 
-        vec2_t* DummyDevice::GetDirection()
+        vec3_t* DummyDevice::GetVelocity()
         {
-            return &m_direction;
-        }
-
-        float DummyDevice::GetRotation()
-        {
-            return m_rotation;
+            return &m_velocity;
         }
     }
 }
