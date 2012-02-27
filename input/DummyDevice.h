@@ -19,14 +19,16 @@ namespace cuardrone
         {
         private:
             float m_thrust;
-            vec3_t m_velocity;
+            vec2_t m_velocity;
+            float m_rotation;
 
         public:
             DummyDevice();
             virtual ~DummyDevice();
 
             float GetThrust();
-            vec3_t* GetVelocity();
+            vec2_t* GetVelocity();
+            float GetRotation();
         };
     }
 }

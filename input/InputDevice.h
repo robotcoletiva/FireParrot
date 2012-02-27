@@ -35,9 +35,13 @@ namespace cuardrone
             virtual float GetThrust() = 0; /* Pure virtual */
             /**
              * Returns a normalized 3d vector which represents velocity
-             * X = pitch, Y = roll, Z = yaw
+             * X = pitch, Y = roll
              */
-            virtual vec3_t* GetVelocity() = 0; /* Pure virtual */
+            virtual vec2_t* GetVelocity() = 0; /* Pure virtual */
+            /**
+             * Returns a float between -1 and 1 which represents rotation (yaw)
+             */
+            virtual float GetRotation() = 0;
         };
     }
 }
