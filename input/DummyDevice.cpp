@@ -8,7 +8,7 @@ namespace cuardrone
         {
             m_thrust = 0.25f; // 1/4 speed
             m_direction[0] = 0.0f; m_direction[1] = 1.0f;  // Forward at full velocity
-            m_rotation = 0.1f;
+            m_rotation = 0.1f; // Slow clockwise rotation
         }
 
         DummyDevice::~DummyDevice()
