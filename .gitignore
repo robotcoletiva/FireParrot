@@ -1,13 +1,16 @@
-*.vcxproj
-*.filters
-*.user
-*.sln
-*.sdf
-*.suo
-*.cmake
-CMakeCache.txt
-CMakeFiles/
-ipch/
-Debug/
-Release/
+# Thanks to Alex for this more awesome way of ignoring useless stuff
 
+# ignore all files by default
+*
+
+# do not ignore all C/++ files
+!.cpp
+!.c
+!.hpp
+!.h
+!.in
+
+# do not ignore certain files
+!README.md
+!CMakeLists.txt
+!.gitignore
