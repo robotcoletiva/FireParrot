@@ -14,4 +14,4 @@ This project uses the cmake build system <http://www.cmake.org/>. If you have CM
 More info
 -----------
 Some more information about the projects development can be found in the Wiki:
-<https://github.com/tgascoigne/CU-ARDrone/wiki>
+<https://github.com/PhoenixClub/CU-ARDrone/wiki>
