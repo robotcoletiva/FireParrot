@@ -24,7 +24,17 @@ namespace cuardrone
         class InputDevice
         {
         private:
-            
+
+        protected:
+            /**
+             * The most recent camera frame available
+             */
+            void* m_cameraFrame;
+            /**
+             * The most recent gyro reading
+             */
+            vec3_t m_gyroDynamics;
+ 
         public:
             InputDevice() { /* Not implemented */ }
             virtual ~InputDevice() { /* Not implemented */ }
@@ -42,6 +52,15 @@ namespace cuardrone
              * Returns a float between -1 and 1 which represents rotation (yaw)
              */
             virtual float GetRotation() = 0;
+            /**
+             * Stores the most recent camera frame
+             * void* until we know the data type
+             */
+            void SetCameraFrame(void* cameraFrame) { m_cameraFrame = cameraFrame; }
+            /**
+             * Stores the more recent gyro reading available
+             */
+            void SetGyroDynamics(vec3_t* dynamics) { memcpy(&m_gyroDynamics, dynamics, sizeof(vec3_t)); }
         };
     }
 }
