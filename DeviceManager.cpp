@@ -13,7 +13,7 @@ DeviceManager::~DeviceManager()
 }
 //
 //      Convert a direction and rotation into a 'vec4_t' storing flight dynamics
-vec4_t Convert(vec3_t direction, vec_t drotation)
+vec4_t DeviceManager::Convert(vec3_t direction, vec_t drotation)
 {
         /*
         **      Makes the assumption that the drone uses +1.0f for clockwise
