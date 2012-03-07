@@ -3,8 +3,11 @@
 # ignore all files by default
 *
 
-# co not ignore code directories
-!input/
+# Do not ignore code directories
+!*/
+
+# Ignore CMake directories (can sometimes contain code)
+CMake*/
 
 # do not ignore all C/++ files
 !*.cpp
