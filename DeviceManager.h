@@ -9,6 +9,8 @@ class DeviceManager
         private:
                 Drone *m_drone;
                 InputDevice *m_input;
+                
+                vec4_t Convert(vec3_t, vec_t);
         
         public:
                 DeviceManager();
