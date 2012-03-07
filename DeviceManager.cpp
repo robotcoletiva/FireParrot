@@ -19,8 +19,11 @@ vec4_t DeviceManager::Convert(vec3_t direction, vec_t drotation)
         **      Makes the assumption that the drone uses +1.0f for clockwise
         **      rotation around an axis.
         */
+        vec4_t conversion = { 
+                -direction[0], -direction[1], drotation, direction[2]
+        };
         
-        return { -direction[0], -direction[1], drotation, direction[2] }
+        return conversion;
 }
 //
 //      Pull, convert and send data
