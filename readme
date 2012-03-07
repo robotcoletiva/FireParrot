@@ -1,1 +1,4 @@
 a suggestion for the new structure of the drone
+
+an attempt to remove the dependency of each class on each other and instead have the 'drone' and 
+'inputdevice' classes pushing and pulling information to and from the 'devicemanager'
