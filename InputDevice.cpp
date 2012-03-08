@@ -16,7 +16,7 @@ InputDevice::~InputDevice()
 //
 //      Return failure upon an attempt to call. New InputDevices should
 //      implement their own.
-int InputDevice::Update()
+int InputDevice::Update(struct DroneData *data)
 {
         return -1;
 }

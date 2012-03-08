@@ -9,6 +9,8 @@ class InputDevice
                 vec3_t m_vecDirection;
                 vec_t m_dRotation;
                 
+                struct DroneData *m_data;
+                
                 virtual void PollInput() = 0;
                 virtual void ProcessVideo();
                 virtual void TrackSensors();
@@ -17,7 +19,7 @@ class InputDevice
                 InputDevice();
                 ~InputDevice();
                 
-                virtual int Update();
+                virtual int Update(struct DroneData*);
 };
 
 #endif /* _INPUT_DEVICE_H */
