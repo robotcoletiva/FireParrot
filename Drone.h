@@ -7,7 +7,7 @@ class Drone
                 Drone();
                 ~Drone();
                 
-                struct DroneFeedback *Update(vec4_t);
+                struct DroneFeedback *Update(vec4_t = (vec4_t) NULL);
 };
 
 #endif /* _DRONE_H */
