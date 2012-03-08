@@ -3,23 +3,24 @@
 
 #include <Common.h>
 
-namespace cuardrone {
+namespace cuardrone
+{
     class InputDevice
     {
-            protected:
-                    FlightParameters m_flightParams;               
-     
-                    DroneFeedback *m_data;
-                    
-                    virtual void PollInput() = 0;
-                    virtual void ProcessVideo();
-                    virtual void TrackSensors();
-                    
-            public:
-                    InputDevice();
-                    virtual ~InputDevice();
-                    
-                    virtual FlightParameters Update(DroneFeedback* feedback) = 0;
+    protected:
+        FlightParameters m_flightParams;               
+
+        DroneFeedback *m_data;
+            
+        virtual void PollInput() = 0;
+        virtual void ProcessVideo();
+        virtual void TrackSensors();
+            
+    public:
+        InputDevice();
+        virtual ~InputDevice();
+            
+        virtual FlightParameters Update(DroneFeedback* feedback);
     };
 }
 
