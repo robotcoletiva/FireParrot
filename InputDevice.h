@@ -3,13 +3,11 @@
 
 class InputDevice
 {
-        private:
-                
         protected:
                 vec3_t m_vecDirection;
                 vec_t m_dRotation;
                 
-                struct DroneData *m_data;
+                struct DroneFeedback *m_data;
                 
                 virtual void PollInput() = 0;
                 virtual void ProcessVideo();
@@ -17,9 +15,9 @@ class InputDevice
                 
         public:
                 InputDevice();
-                ~InputDevice();
+                virtual ~InputDevice();
                 
-                virtual int Update(struct DroneData*);
+                virtual int Update(struct DroneFeedback*);
 };
 
 #endif /* _INPUT_DEVICE_H */
