@@ -4,6 +4,7 @@
 #include <DroneLib/ARDrone.h>
 #include <CImg.h>
 
+
 /**
  * Drone
  * ======
@@ -11,6 +12,12 @@
  * Provides an interface to the drone's various inputs and outputs
  */
 
+using namespace cimg_library;
+
+typedef float vec_t;            /* scalar                 */
+typedef vec_t vec2_t[2];        /* two-dimensional vector */
+typedef vec_t vec3_t[3];        /* three-dimension ...    */
+typedef vec_t vec4_t[4];        /* three-dimension ...    */
 
 namespace cuardrone
 {
@@ -36,12 +43,12 @@ namespace cuardrone
             /**
              * Allows us to grab feedback from the drone's gyro etc.
              */
-            ARDrone::NavigationDataReciever* m_navdataReciever;
+            ARDrone::NavigationDataReceiver* m_navdataReceiver;
 
             /**
              * Provides video output from the drone
              */
-            ARDrone::VideoDataReciever m_videoReciever;
+            ARDrone::VideoDataReceiver* m_videoReceiver;
 
             /**
              * Stores all the relevant feedback we get from the drone
@@ -80,7 +87,7 @@ namespace cuardrone
              * Returns the DroneFeedback structure which has all the feedback
              * info from the drone
              */
-            DroneFeedback GetFeedback();
+            DroneFeedback* GetFeedback();
     };
 }
 

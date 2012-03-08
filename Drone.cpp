@@ -5,27 +5,27 @@ namespace cuardrone
     Drone::Drone(std::string ipAddr)
     {
         m_controller.connectWithDroneAtAddress(ipAddr.c_str());
-        m_navdataReciever = new ARDrone::NavigationDataReciever(&m_controller, ipAddr.c_str());
-        m_videoReciever = new ARDrone::VideoDataReciever(&m_controller, ipAddr.c_str());
+        m_navdataReceiver = new ARDrone::NavigationDataReceiver(&m_controller, ipAddr.c_str());
+        m_videoReceiver = new ARDrone::VideoDataReceiver(&m_controller, ipAddr.c_str());
     
         m_droneFeedback = new DroneFeedback;
         
-        m_controller->requestNavigationData();
-        m_controller->requestVideoData();
+        m_controller.requestNavigationData();
+        m_controller.requestVideoData();
         
-        m_navdataReciever->start();
-        m_videoReciever->start();
+        m_navdataReceiver->start();
+        m_videoReceiver->start();
     }
     
     Drone::~Drone()
     {
-        m_videoReciever->stop();
-        m_navdataReciever->stop();
+        m_videoReceiver->stop();
+        m_navdataReceiver->stop();
         
         delete m_droneFeedback;
 
-        delete m_videoReciever;
-        delete m_navdataReciever;
+        delete m_videoReceiver;
+        delete m_navdataReceiver;
     }
 
     void Drone::TakeOff()
@@ -66,8 +66,8 @@ namespace cuardrone
         static ARDrone::NavigationData data;
         static ARDrone::VideoDecoder::Image frame;
 
-        m_navdataReciever->copyDataTo(data);
-        m_videoReciever->copyDataTo(frame);
+        m_navdataReceiver->copyDataTo(data);
+        m_videoReceiver->copyDataTo(frame);
 
         m_droneFeedback->altitude = data.altitude;
         m_droneFeedback->batteryLevel = data.batteryLevel;
