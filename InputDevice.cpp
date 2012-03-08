@@ -16,9 +16,8 @@ InputDevice::~InputDevice()
 //
 //      Return failure upon an attempt to call. New InputDevices should
 //      implement their own.
-int InputDevice::Update(struct DroneFeedback *data)
+vec4_t InputDevice::Update(struct DroneFeedback *data)
 {
-        return -1;
 }
 //
 //       Do nothing; child classes should implement their own video proccessing.

@@ -17,7 +17,7 @@ class InputDevice
                 InputDevice();
                 virtual ~InputDevice();
                 
-                virtual int Update(struct DroneFeedback*);
+                virtual vec4_t Update(struct DroneFeedback*);
 };
 
 #endif /* _INPUT_DEVICE_H */
