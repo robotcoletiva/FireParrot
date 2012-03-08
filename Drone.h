@@ -3,13 +3,11 @@
 
 class Drone
 {
-        private:
-                
         public:
                 Drone();
                 ~Drone();
                 
-                void Update(vec4_t);
+                struct DroneFeedback *Update(vec4_t);
 };
 
 #endif /* _DRONE_H */
