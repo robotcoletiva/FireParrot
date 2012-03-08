@@ -1,6 +1,8 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#include <stdint.h>
+
 #include <CImg.h>
 
 using namespace cimg_library;
@@ -14,9 +16,16 @@ namespace cuardrone
 {
     enum FlightFlags
     {
-        FLAG_TAKEOFF    = 0x1;
-        FLAG_LAND       = 0x2;
-        FLAG_EMERGENCY  = 0x4;
+        FLAG_TAKEOFF    = 0x1,
+        FLAG_LAND       = 0x2,
+        FLAG_EMERGENCY  = 0x4,
+    };
+    enum DynamicsParams
+    {
+        FLIGHT_PITCH    = 0,
+        FLIGHT_YAW      = 1,
+        FLIGHT_ROLL     = 2,
+        FLIGHT_THRUST   = 3
     };
     struct DroneFeedback
     {

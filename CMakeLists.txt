@@ -14,8 +14,10 @@ set(DRONE_VERSION_MINOR 1)
 set(DRONELIB_HEADERS DroneLib/ARDrone.h DroneLib/MemoryLibrary.h)
 set(DRONELIB_SOURCES DroneLib/ARDrone.cpp)
 
-set(DRONE_HEADERS   DroneConfig.h InputDevice.h Drone.h)
-set(DRONE_SOURCES   main.cpp Drone.cpp)
+set(DRONE_HEADERS   DroneConfig.h InputDevice.h Drone.h
+                    XBoxDevice.h)
+set(DRONE_SOURCES   main.cpp InputDevice.cpp Drone.cpp
+                    XBoxDevice.cpp)
 source_group(cuardrone FILES    ${DRONE_HEADERS} ${DRONE_SOURCES}
                                 ${DRONELIB_HEADERS} ${DRONELIB_SOURCES})
 
