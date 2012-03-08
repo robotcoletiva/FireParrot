@@ -1,7 +1,9 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#include <string>
 #include <stdint.h>
+#include <exception>
 
 #include <CImg.h>
 
@@ -39,6 +41,16 @@ namespace cuardrone
     {
         vec3_t flightDynamics;
         uint8_t flags; // See FlightFlags
+    };
+    class DroneException : public std::exception
+    {
+    private:
+        std::string m_what;
+    public:
+        DroneException(std::string what) : m_what(what) {}
+        virtual ~DroneException() throw() { }
+
+        const char* what() const throw() { return m_what.c_str(); }
     };
 }
 

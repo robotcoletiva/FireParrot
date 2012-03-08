@@ -4,12 +4,12 @@
 
 namespace cuardrone
 {
-    XBoxDevice::XBoxDevice()
+    XBoxDevice::XBoxDevice() throw(DroneException)
     {
         GamepadInit();
         if (!GamepadIsConnected(GAMEPAD_0))
         {
-            // Exception? How do we handle this
+            throw DroneException("Unable to find gamepad!");
         }
     }
 

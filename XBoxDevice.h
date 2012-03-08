@@ -33,7 +33,7 @@ namespace cuardrone
         virtual void TrackSensors();
         
     public:
-        XBoxDevice();
+        XBoxDevice() throw(DroneException);
         virtual ~XBoxDevice();
     };
 }
