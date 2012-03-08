@@ -8,7 +8,6 @@
 
 # Ignore CMake directories (can sometimes contain code)
 CMake*/
-gamepad/
 
 # do not ignore all C/++ files
 !*.cpp
