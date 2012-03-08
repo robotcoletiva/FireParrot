@@ -10,8 +10,8 @@ class DeviceManager
                 vec4_t Convert(vec3_t, vec_t);
                 
         public:
-                DeviceManager();
-                ~DeviceManager();
+                DeviceManager(InputDevice* dev, Drone* drone);
+                virtual ~DeviceManager();
                 
                 void Update();
 };

@@ -1,12 +1,13 @@
 #ifndef   _INPUT_DEVICE_H
 #define   _INPUT_DEVICE_H
 
+#include <Common.h>
+
 class InputDevice
 {
         protected:
-                vec3_t m_vecDirection;
-                vec_t m_dRotation;
-                
+                FlightParameters m_flightParams;               
+ 
                 struct DroneFeedback *m_data;
                 
                 virtual void PollInput() = 0;
@@ -17,7 +18,7 @@ class InputDevice
                 InputDevice();
                 virtual ~InputDevice();
                 
-                virtual vec4_t Update(struct DroneFeedback*);
+                virtual FlightParameters Update(DroneFeedback* feedback);
 };
 
 #endif /* _INPUT_DEVICE_H */

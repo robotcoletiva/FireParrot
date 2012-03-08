@@ -15,7 +15,7 @@ Drone::~Drone()
 }
 //
 //
-struct DroneFeedback *Drone::Update(vec4_t)
+DroneFeedback *Drone::Update(FlightParameters p)
 {
 }
 
