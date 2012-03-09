@@ -17,6 +17,6 @@ CMake*/
 !*.in
 
 # do not ignore certain files
-!README.md
+!README.*
 !CMakeLists.txt
 !.gitignore
