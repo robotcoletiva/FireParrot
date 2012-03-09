@@ -5,21 +5,19 @@ project (cuardrone)
 
 # Build the gamepad lib
 add_subdirectory(gamepad)
+add_subdirectory(dronelib)
 
 link_directories (${cuardrone_BINARY_DIR}/gamepad) 
+link_directories (${cuardrone_BINARY_DIR}/dronelib) 
 
 set(DRONE_VERSION_MAJOR 0)
 set(DRONE_VERSION_MINOR 1)
-
-set(DRONELIB_HEADERS DroneLib/ARDrone.h DroneLib/MemoryLibrary.h)
-set(DRONELIB_SOURCES DroneLib/ARDrone.cpp)
 
 set(DRONE_HEADERS   DroneConfig.h InputDevice.h Drone.h
                     XBoxDevice.h)
 set(DRONE_SOURCES   main.cpp InputDevice.cpp Drone.cpp
                     XBoxDevice.cpp)
-source_group(cuardrone FILES    ${DRONE_HEADERS} ${DRONE_SOURCES}
-                                ${DRONELIB_HEADERS} ${DRONELIB_SOURCES})
+source_group(cuardrone FILES    ${DRONE_HEADERS} ${DRONE_SOURCES})
 
 include_directories("${PROJECT_SOURCE_DIR}")
 
@@ -31,4 +29,4 @@ configure_file (
 add_executable(cuardrone    ${DRONE_SOURCES} ${DRONE_HEADERS}
                             ${DRONELIB_SOURCES} ${DRONELIB_HEADERS})
 
-target_link_libraries(cuardrone gamepad commonc++ X11)
+target_link_libraries(cuardrone gamepad dronelib)

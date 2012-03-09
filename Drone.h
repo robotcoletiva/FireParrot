@@ -3,7 +3,7 @@
 
 #include <Common.h>
 
-#include <DroneLib/ARDrone.h>
+#include <dronelib/ARDrone.h>
 
 /**
  * Drone
