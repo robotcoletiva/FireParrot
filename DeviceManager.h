@@ -3,8 +3,13 @@
 
 #include <Common.h>
 
+
 namespace cuardrone
 {
+    // Predefinitions
+    class InputDevice;
+    class Drone;
+    
     class DeviceManager
     {
             private:
