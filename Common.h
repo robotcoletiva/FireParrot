@@ -6,6 +6,7 @@
 #include <exception>
 
 #include <CImg.h>
+#include <DroneConfig.h>
 
 using namespace cimg_library;
 
@@ -21,6 +22,7 @@ namespace cuardrone
         FLAG_TAKEOFF    = 0x1,
         FLAG_LAND       = 0x2,
         FLAG_EMERGENCY  = 0x4,
+        FLAG_SWITCHCAM  = 0x8
     };
     enum DynamicsParams
     {
@@ -28,6 +30,11 @@ namespace cuardrone
         FLIGHT_YAW      = 1,
         FLIGHT_ROLL     = 2,
         FLIGHT_THRUST   = 3
+    };
+    enum CameraPosition
+    {
+        CAMERA_FRONT,
+        CAMERA_DOWN
     };
     struct DroneFeedback
     {

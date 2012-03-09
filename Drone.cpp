@@ -28,44 +28,44 @@ namespace cuardrone
         delete m_navdataReceiver;
     }
 
-    void Drone::TakeOff()
-    {
-        m_controller.takeOff();
-    }
-
-    void Drone::Land()
-    {
-        m_controller.land();
-    }
-    
-    void Drone::EmergencyShutdown()
-    {
-        m_controller.sendEmergencyShutdown();
-    }
-
-    void Drone::SendControlParameters(vec4_t params)
-    {
-        m_controller.sendControlParameters(1, params[0], params[1], params[2], params[3]);
-    }
-
-    void Drone::SetCameraPosition(CameraType t)
-    {
-        switch (t)
-        { 
-        case Drone::CAMERA_FRONT:
-            m_controller.switchToFrontCamera();
-            break;
-        case Drone::CAMERA_DOWN:
-            m_controller.switchToDownCamera();
-            break;
-        }
-    }
-
-    DroneFeedback* Drone::GetFeedback()
+    DroneFeedback* Drone::Update(FlightParameters p)
     {
         static ARDrone::NavigationData data;
         static ARDrone::VideoDecoder::Image frame;
+        
+        // Process flags
+        if ((p.flags & FLAG_TAKEOFF) != 0)
+        {
+            m_controller.takeOff();
+        }
+        if ((p.flags & FLAG_LAND) != 0)
+        {
+            m_controller.land();
+        }
+        if ((p.flags & FLAG_EMERGENCY) != 0)
+        {
+            m_controller.sendEmergencyShutdown();
+        }
+        if ((p.flags & FLAG_SWITCHCAM) != 0)
+        {
+            switch (m_currentCamera)
+            {
+            case CAMERA_FRONT:
+                m_controller.switchToDownCamera();
+                m_currentCamera = CAMERA_DOWN;
+                break;
+            case CAMERA_DOWN:
+                m_controller.switchToFrontCamera();
+                m_currentCamera = CAMERA_FRONT;
+                break;
+            }
+        }
+        // Send control params
+        m_controller.sendControlParameters(1, p.flightDynamics[FLIGHT_PITCH], 
+                p.flightDynamics[FLIGHT_YAW], p.flightDynamics[FLIGHT_ROLL],
+                p.flightDynamics[FLIGHT_THRUST]);
 
+        // Store feedback and return
         m_navdataReceiver->copyDataTo(data);
         m_videoReceiver->copyDataTo(frame);
 

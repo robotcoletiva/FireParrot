@@ -3,6 +3,9 @@
 
 #include <DeviceManager.h>
 
+#include <InputDevice.h>
+#include <Drone.h>
+
 namespace cuardrone
 {
     //
@@ -12,7 +15,7 @@ namespace cuardrone
     }
     //
     //      Destructor
-    DeviceManager::~DeviceManager()
+    eviceManager::~DeviceManager()
     {
     }
     //

@@ -35,6 +35,10 @@ namespace cuardrone
         {
             m_flightParams.flags &= FLAG_EMERGENCY;
         }
+        if (GamepadButtonDown(GAMEPAD_0, BUTTON_RIGHT_SHOULDER))
+        {
+            m_flightParams.flags &= FLAG_SWITCHCAM;
+        }
         
 
         // Update thrust
