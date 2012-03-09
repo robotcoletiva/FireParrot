@@ -15,7 +15,7 @@ namespace cuardrone
     }
     //
     //      Destructor
-    eviceManager::~DeviceManager()
+    DeviceManager::~DeviceManager()
     {
     }
     //
