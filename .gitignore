@@ -16,6 +16,10 @@ CMake*/
 !*.h
 !*.in
 
+# do not ignore documentation
+!*.png
+!*.xmi
+
 # do not ignore certain files
 !README.*
 !CMakeLists.txt
