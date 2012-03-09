@@ -4,7 +4,7 @@ CU-AR Drone is an extensible interface between the Parrot AR Drone and multiple 
 
 Building
 ---------
-This project uses the cmake build system <http://www.cmake.org/>. If you have CMake installed, type `cmake .` within the root folder to generate project/make files for your platform.
+This project uses the cmake build system (<http://www.cmake.org/>). If you have CMake installed, type `cmake .` within the root folder to generate project/make files for your platform.
 
 Dependencies
 ------------
@@ -15,7 +15,7 @@ Windows:
 Linux:
 
 + libudev
-+ commonc++ <http://www.hyperrealm.com/main.php?s=commoncpp>
++ commonc++ (<http://www.hyperrealm.com/main.php?s=commoncpp>)
 + libX11
 
 TODO
@@ -25,7 +25,7 @@ TODO
 
 Thanks
 -------
-With thanks to Sean Middleditch <https://github.com/elanthis> for his gamepad library and Pongsak Suvanpong of the ARDrone forums for the temporary ardrone API.
+With thanks to Sean Middleditch (<https://github.com/elanthis>) for his gamepad library and Pongsak Suvanpong of the ARDrone forums for the temporary ardrone API.
 
 More info
 -----------
