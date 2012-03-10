@@ -31,3 +31,4 @@ More info
 -----------
 Some more information about the projects development can be found in the Wiki:
 <https://github.com/PhoenixClub/CU-ARDrone/wiki>
+You can also find documentation here: <http://tom.gascoigne.me/ardrone/documentation/doxygen/html/>
