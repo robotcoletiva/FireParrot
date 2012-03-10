@@ -10,8 +10,10 @@ namespace cuardrone
 {
     //
     //      Constructor
-    DeviceManager::DeviceManager()
+    DeviceManager::DeviceManager(InputDevice* input, Drone* drone)
     {
+        m_input = input;
+        m_drone = drone;
     }
     //
     //      Destructor
@@ -20,13 +22,10 @@ namespace cuardrone
     }
     //
     //
-    vec4_t DeviceManager::Convert(vec3_t, vec_t)
-    {
-    }
-    //
-    //
     void DeviceManager::Update()
     {
+        FlightParameters p = m_input->Update(m_drone->GetFeedback());
+        m_drone->Update(p);
     }
 }
 #endif /* _DEVICE_MANAGER_CPP */

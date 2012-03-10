@@ -2,6 +2,7 @@
 #define COMMON_H
 
 #include <string>
+#include <iostream>
 #include <stdint.h>
 #include <exception>
 
@@ -19,10 +20,10 @@ namespace cuardrone
 {
     enum FlightFlags
     {
-        FLAG_TAKEOFF    = 0x1,
-        FLAG_LAND       = 0x2,
-        FLAG_EMERGENCY  = 0x4,
-        FLAG_SWITCHCAM  = 0x8
+        FLAG_TAKEOFF    = (1 << 0),
+        FLAG_LAND       = (1 << 1),
+        FLAG_EMERGENCY  = (1 << 2),
+        FLAG_SWITCHCAM  = (1 << 3)
     };
     enum DynamicsParams
     {
@@ -46,7 +47,7 @@ namespace cuardrone
     };
     struct FlightParameters
     {
-        vec3_t flightDynamics;
+        vec4_t flightDynamics;
         uint8_t flags; // See FlightFlags
     };
     class DroneException : public std::exception

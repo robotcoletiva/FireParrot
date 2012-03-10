@@ -25,6 +25,9 @@ namespace cuardrone
     FlightParameters InputDevice::Update(DroneFeedback *data)
     {
         m_data = data;
+        PollInput();
+        ProcessVideo();
+        TrackSensors();
         return m_flightParams;
     }
     //

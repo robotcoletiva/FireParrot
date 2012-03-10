@@ -28,11 +28,29 @@ namespace cuardrone
         delete m_navdataReceiver;
     }
 
-    DroneFeedback* Drone::Update(FlightParameters p)
+    DroneFeedback* Drone::GetFeedback()
     {
         static ARDrone::NavigationData data;
         static ARDrone::VideoDecoder::Image frame;
         
+        // Store feedback and return
+        m_navdataReceiver->copyDataTo(data);
+//        m_videoReceiver->copyDataTo(frame);
+
+        m_droneFeedback->altitude = data.altitude;
+        m_droneFeedback->batteryLevel = data.batteryLevel;
+        m_droneFeedback->flightDynamics[0] = data.orientation.pitch;
+        m_droneFeedback->flightDynamics[1] = data.orientation.yaw;
+        m_droneFeedback->flightDynamics[2] = data.orientation.roll;
+        m_droneFeedback->speed[0] = data.speed.vx;
+        m_droneFeedback->speed[1] = data.speed.vy;
+        m_droneFeedback->speed[2] = data.speed.vz;
+        m_droneFeedback->videoFrame.assign(frame.data, frame.width, frame.height, 1, 3);
+        return m_droneFeedback;
+    }
+
+    void Drone::Update(FlightParameters p)
+    {
         // Process flags
         if ((p.flags & FLAG_TAKEOFF) != 0)
         {
@@ -62,22 +80,7 @@ namespace cuardrone
         }
         // Send control params
         m_controller.sendControlParameters(1, p.flightDynamics[FLIGHT_PITCH], 
-                p.flightDynamics[FLIGHT_YAW], p.flightDynamics[FLIGHT_ROLL],
+                p.flightDynamics[FLIGHT_ROLL], p.flightDynamics[FLIGHT_YAW],
                 p.flightDynamics[FLIGHT_THRUST]);
-
-        // Store feedback and return
-        m_navdataReceiver->copyDataTo(data);
-        m_videoReceiver->copyDataTo(frame);
-
-        m_droneFeedback->altitude = data.altitude;
-        m_droneFeedback->batteryLevel = data.batteryLevel;
-        m_droneFeedback->flightDynamics[0] = data.orientation.pitch;
-        m_droneFeedback->flightDynamics[1] = data.orientation.yaw;
-        m_droneFeedback->flightDynamics[2] = data.orientation.roll;
-        m_droneFeedback->speed[0] = data.speed.vx;
-        m_droneFeedback->speed[1] = data.speed.vy;
-        m_droneFeedback->speed[2] = data.speed.vz;
-        m_droneFeedback->videoFrame.assign(frame.data, frame.width, frame.height, 1, 3);
-        return m_droneFeedback;
     }
 }

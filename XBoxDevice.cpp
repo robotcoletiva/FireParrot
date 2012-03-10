@@ -7,10 +7,12 @@ namespace cuardrone
     XBoxDevice::XBoxDevice() throw(DroneException)
     {
         GamepadInit();
+        std::cout << "Gamepad init" << std::endl;
         if (!GamepadIsConnected(GAMEPAD_0))
         {
             throw DroneException("Unable to find gamepad!");
         }
+        memset(&m_flightParams, 0, sizeof(m_flightParams));
     }
 
     XBoxDevice::~XBoxDevice()
@@ -25,19 +27,19 @@ namespace cuardrone
         // Update flags
         if (GamepadButtonDown(GAMEPAD_0, BUTTON_A))
         {
-            m_flightParams.flags &= FLAG_TAKEOFF;
+            m_flightParams.flags |= FLAG_TAKEOFF;
         }
         if (GamepadButtonDown(GAMEPAD_0, BUTTON_B))
         {
-            m_flightParams.flags &= FLAG_LAND;
+            m_flightParams.flags |= FLAG_LAND;
         }
         if (GamepadButtonDown(GAMEPAD_0, BUTTON_BACK))
         {
-            m_flightParams.flags &= FLAG_EMERGENCY;
+            m_flightParams.flags |= FLAG_EMERGENCY;
         }
         if (GamepadButtonDown(GAMEPAD_0, BUTTON_RIGHT_SHOULDER))
         {
-            m_flightParams.flags &= FLAG_SWITCHCAM;
+            m_flightParams.flags |= FLAG_SWITCHCAM;
         }
         
 
@@ -51,7 +53,7 @@ namespace cuardrone
         float xPos, yPos;
         xPos = yPos = 0.0f;
         GamepadStickNormXY(GAMEPAD_0, STICK_LEFT, &xPos, &yPos);
-        m_flightParams.flightDynamics[FLIGHT_PITCH] = yPos;
+        m_flightParams.flightDynamics[FLIGHT_PITCH] = -yPos;
         m_flightParams.flightDynamics[FLIGHT_ROLL] = xPos;
 
         GamepadStickNormXY(GAMEPAD_0, STICK_RIGHT, &xPos, &yPos);

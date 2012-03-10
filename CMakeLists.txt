@@ -14,9 +14,9 @@ set(DRONE_VERSION_MAJOR 0)
 set(DRONE_VERSION_MINOR 1)
 
 set(DRONE_HEADERS   DroneConfig.h InputDevice.h Drone.h
-                    XBoxDevice.h)
+                    XBoxDevice.h DeviceManager.h)
 set(DRONE_SOURCES   main.cpp InputDevice.cpp Drone.cpp
-                    XBoxDevice.cpp)
+                    XBoxDevice.cpp DeviceManager.cpp)
 source_group(cuardrone FILES    ${DRONE_HEADERS} ${DRONE_SOURCES})
 
 include_directories("${PROJECT_SOURCE_DIR}")

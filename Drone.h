@@ -47,7 +47,8 @@ namespace cuardrone
         Drone(std::string ipAddr);
         ~Drone();
         
-        DroneFeedback *Update(FlightParameters p);
+        void Update(FlightParameters p);
+        DroneFeedback* GetFeedback();
     };
 }
 #endif /* _DRONE_H */
