@@ -22,6 +22,8 @@ TODO
 -----
 + Come up with a better project name!!!
 + Change namespaces to reflect said project name
++ Create our own drone interface api
++ Add more cool input devices :)
 
 Thanks
 -------
