@@ -5,24 +5,21 @@
 
 #include <InputDevice.h>
 
-/**
- * XBoxDevice
- * ==========
- * 
- * This is an interface for the XBox 360 controller, using the gamepad
- * library by 'elanthis' <https://github.com/elanthis/gamepad>
- *
- * The controls are as follows:
- * Left stick = Pitch, Roll (Movement)
- * Right stick = Yaw (Rotation)
- * A = launch
- * B = land
- * Back = Emergency quit
- * Triggers = thrust
- */
 
 namespace cuardrone
 {
+    /**
+     * This is an interface for the XBox 360 controller, using the gamepad
+     * library by 'elanthis' <https://github.com/elanthis/gamepad>
+     *
+     * The controls are as follows:
+     * Left stick = Pitch, Roll (Movement)
+     * Right stick = Yaw (Rotation)
+     * A = launch
+     * B = land
+     * Back = Emergency quit
+     * Triggers = thrust
+     */
     class XBoxDevice : public InputDevice
     {
     private:

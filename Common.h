@@ -14,10 +14,14 @@ using namespace cimg_library;
 typedef float vec_t;            /* scalar                 */
 typedef vec_t vec2_t[2];        /* two-dimensional vector */
 typedef vec_t vec3_t[3];        /* three-dimension ...    */
-typedef vec_t vec4_t[4];        /* three-dimension ...    */
+typedef vec_t vec4_t[4];        /* four-dimension ...    */
 
 namespace cuardrone
 {
+    /**
+     * Contains bitmasks which are used for the FlightParameters flags field
+     * \sa DroneFeedback
+     */
     enum FlightFlags
     {
         FLAG_TAKEOFF    = (1 << 0),
@@ -25,6 +29,9 @@ namespace cuardrone
         FLAG_EMERGENCY  = (1 << 2),
         FLAG_SWITCHCAM  = (1 << 3)
     };
+    /**
+     * Allows us to easily locate a component of the flight dynamics within the vec3/vec4
+     */
     enum DynamicsParams
     {
         FLIGHT_PITCH    = 0,
@@ -32,23 +39,32 @@ namespace cuardrone
         FLIGHT_ROLL     = 2,
         FLIGHT_THRUST   = 3
     };
+    /**
+     * Represents either the forward facing or downward facing camera
+     */
     enum CameraPosition
     {
         CAMERA_FRONT,
         CAMERA_DOWN
     };
+    /**
+     * Contains all the relevant feedback data from the drone
+     */
     struct DroneFeedback
     {
-        float altitude;
-        vec3_t flightDynamics; // Pitch, Yaw, Roll
-        vec3_t speed; // Speed in the x,y,z dirs
-        unsigned int batteryLevel;
-        CImg<unsigned char> videoFrame;
+        float altitude;                 /*!< The current altitude of the drone */ 
+        vec3_t flightDynamics;          /*!< The current flight dynamics (pitch,yaw,roll) of the drone */
+        vec3_t speed;                   /*!< Speed in the x,y,z dirs */
+        unsigned int batteryLevel;      /*!< Current battery level of the drone */
+        CImg<unsigned char> videoFrame; /*!< The most recent video frame stored in a CImg */
     };
+    /**
+     * Contains all input to be sent to the drone
+     */
     struct FlightParameters
     {
-        vec4_t flightDynamics;
-        uint8_t flags; // See FlightFlags
+        vec4_t flightDynamics;          /*!< The current flight dynamics (pitch,yaw,roll) of the drone */
+        uint8_t flags;                  /*!< Flight flag bitmap. See FlightFlags */
     };
     class DroneException : public std::exception
     {

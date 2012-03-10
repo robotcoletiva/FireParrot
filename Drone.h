@@ -5,15 +5,12 @@
 
 #include <dronelib/ARDrone.h>
 
-/**
- * Drone
- * ======
- *
- * Provides an interface to the drone's various inputs and outputs
- */
 
 namespace cuardrone
 {
+    /**
+     * Provides an interface to the drone's various inputs and outputs
+     */
     class Drone
     {
     private:
@@ -46,8 +43,16 @@ namespace cuardrone
     public:
         Drone(std::string ipAddr);
         ~Drone();
-        
+
+        /**
+         * Sends the flight parameters to the drone
+         * \param p The flight parameters to send
+         */        
         void Update(FlightParameters p);
+        /**
+         * Retrieves the feedback data
+         * \returns A pointer to the feedback data to be given to the input device
+         */
         DroneFeedback* GetFeedback();
     };
 }

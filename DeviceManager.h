@@ -9,18 +9,38 @@ namespace cuardrone
     // Predefinitions
     class InputDevice;
     class Drone;
-    
+    /**
+     * Bridges the InputDevice to the Drone
+     */
     class DeviceManager
     {
-            private:
-                    InputDevice *m_input;
-                    Drone *m_drone;
-                    
-            public:
-                    DeviceManager(InputDevice* dev, Drone* drone);
-                    virtual ~DeviceManager();
-                    
-                    void Update();
+    private:
+        /**
+         * A pointer to the input device used to control the drone.
+         */
+        InputDevice *m_input;
+        /**
+         * A pointer to the drone object we're communicating with
+         */
+        Drone *m_drone;
+            
+    public:
+        /**
+         * Constructor.
+         * \param dev A pointer to an InputDevice to use
+         * \param drone A pointer to a Drone object to use
+         */
+        DeviceManager(InputDevice* dev, Drone* drone);
+        virtual ~DeviceManager();
+        
+        /**
+         * Must be called periodically. Synchronizes the input device
+         * with the drone and sends back any feedback data from the drone
+         *
+         * Also calls the functions in InputDevice which allow for processing
+         * of data and polling of input
+         */
+        void Update();
     };
 }
 #endif /* _DEVICE_MANAGER_H */
