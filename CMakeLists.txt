@@ -10,8 +10,8 @@ add_subdirectory(dronelib)
 link_directories (${cuardrone_BINARY_DIR}/gamepad) 
 link_directories (${cuardrone_BINARY_DIR}/dronelib) 
 
-set(DRONE_VERSION_MAJOR 0)
-set(DRONE_VERSION_MINOR 1)
+set(DRONE_VERSION_MAJOR 1)
+set(DRONE_VERSION_MINOR 0)
 
 set(DRONE_HEADERS   DroneConfig.h InputDevice.h Drone.h
                     XBoxDevice.h DeviceManager.h)
