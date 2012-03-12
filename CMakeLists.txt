@@ -6,9 +6,11 @@ project (cuardrone)
 # Build the gamepad lib
 add_subdirectory(gamepad)
 add_subdirectory(dronelib)
+add_subdirectory(libopendrone)
 
 link_directories (${cuardrone_BINARY_DIR}/gamepad) 
 link_directories (${cuardrone_BINARY_DIR}/dronelib) 
+link_directories (${cuardrone_BINARY_DIR}/libopendrone) 
 
 set(DRONE_VERSION_MAJOR 1)
 set(DRONE_VERSION_MINOR 0)
@@ -26,7 +28,6 @@ configure_file (
   "${PROJECT_SOURCE_DIR}/DroneConfig.h"
   )
 
-add_executable(cuardrone    ${DRONE_SOURCES} ${DRONE_HEADERS}
-                            ${DRONELIB_SOURCES} ${DRONELIB_HEADERS})
+add_executable(cuardrone    ${DRONE_SOURCES} ${DRONE_HEADERS})
 
 target_link_libraries(cuardrone gamepad dronelib)

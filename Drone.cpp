@@ -1,5 +1,4 @@
 #include <Drone.h>
-
 namespace cuardrone
 {
     Drone::Drone(std::string ipAddr)
