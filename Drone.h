@@ -6,7 +6,7 @@
 #include <dronelib/ARDrone.h>
 
 
-namespace cuardrone
+namespace fireparrot
 {
     /**
      * Provides an interface to the drone's various inputs and outputs

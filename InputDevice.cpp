@@ -2,7 +2,7 @@
 #define   _INPUT_DEVICE_CPP
 
 #include <InputDevice.h>
-namespace cuardrone
+namespace fireparrot
 {
     //
     //      Constructor

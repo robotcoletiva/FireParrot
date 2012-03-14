@@ -1,5 +1,5 @@
 #include <Drone.h>
-namespace cuardrone
+namespace fireparrot
 {
     Drone::Drone(std::string ipAddr)
     {
@@ -55,6 +55,7 @@ namespace cuardrone
         {
             m_controller.takeOff();
         }
+
         if ((p.flags & FLAG_LAND) != 0)
         {
             m_controller.land();

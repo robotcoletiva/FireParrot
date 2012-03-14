@@ -4,7 +4,7 @@
 #include <Common.h>
 
 
-namespace cuardrone
+namespace fireparrot
 {
     // Predefinitions
     class InputDevice;

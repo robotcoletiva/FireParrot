@@ -6,7 +6,7 @@
 #include <InputDevice.h>
 
 
-namespace cuardrone
+namespace fireparrot
 {
     /**
      * This is an interface for the XBox 360 controller, using the gamepad

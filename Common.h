@@ -16,7 +16,7 @@ typedef vec_t vec2_t[2];        /* two-dimensional vector */
 typedef vec_t vec3_t[3];        /* three-dimension ...    */
 typedef vec_t vec4_t[4];        /* four-dimension ...    */
 
-namespace cuardrone
+namespace fireparrot
 {
     /**
      * Contains bitmasks which are used for the FlightParameters flags field
