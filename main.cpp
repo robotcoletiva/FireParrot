@@ -1,7 +1,7 @@
-/** \mainpage CU-ARDrone
+/** \mainpage FireParrot
  *
  * \section sec_intro Intro
- * CU-AR Drone is an extensible interface between the Parrot AR Drone and 
+ * FireParrot Drone is an extensible interface between the Parrot AR Drone and 
  * multiple input devices. This project's main goal is to create an interface 
  * between the drone and Coventry University's merlin flight simulator, 
  * and is a joint effort between members of the university's Computer Club.
@@ -21,7 +21,6 @@
  * + libX11
  *
  * \section sec_todo TODO
- * + Come up with a better project name!!!
  * + Change namespaces to reflect said project name
  *
  * \section sec_thanks Thanks
@@ -29,7 +28,7 @@
  *
  * \section sec_more More info
  * Some more information about the projects development can be found in the Wiki:
- * <https://github.com/PhoenixClub/CU-ARDrone/wiki>
+ * <https://github.com/PhoenixClub/FireParrot/wiki>
  */
 #include <Common.h>
 
