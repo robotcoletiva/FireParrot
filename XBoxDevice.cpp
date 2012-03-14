@@ -2,7 +2,7 @@
 
 #include <gamepad/gamepad.h>
 
-namespace cuardrone
+namespace fireparrot
 {
     XBoxDevice::XBoxDevice() throw(DroneException)
     {

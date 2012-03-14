@@ -6,7 +6,7 @@
 #include <InputDevice.h>
 #include <Drone.h>
 
-namespace cuardrone
+namespace fireparrot
 {
     //
     //      Constructor

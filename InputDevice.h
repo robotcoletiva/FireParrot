@@ -3,7 +3,7 @@
 
 #include <Common.h>
 
-namespace cuardrone
+namespace fireparrot
 {
     /**
      * An interface which all control devices must implement.

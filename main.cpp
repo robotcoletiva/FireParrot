@@ -40,7 +40,7 @@
 #include <DeviceManager.h>
 #include <XBoxDevice.h>
 
-using namespace cuardrone;
+using namespace fireparrot;
 
 int main(int argc, char** argv)
 {
