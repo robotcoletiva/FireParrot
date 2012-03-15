@@ -1,3 +1,6 @@
 [submodule "libopendrone"]
 	path = libopendrone
 	url = git@github.com:PhoenixClub/libopendrone.git
+[submodule "gamepad"]
+	path = gamepad
+	url = git@github.com:PhoenixClub/gamepad.git
