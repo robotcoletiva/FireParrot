@@ -1,0 +1,3 @@
+[submodule "libopendrone"]
+	path = libopendrone
+	url = git@github.com:PhoenixClub/libopendrone.git
