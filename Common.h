@@ -48,6 +48,15 @@ namespace fireparrot
         CAMERA_DOWN
     };
     /**
+     * Represents a single camera frame
+     */
+    struct DroneFrame
+    {
+        int width;
+        int height;
+        void* data;
+    };
+    /**
      * Contains all the relevant feedback data from the drone
      */
     struct DroneFeedback
@@ -56,7 +65,7 @@ namespace fireparrot
         vec3_t flightDynamics;          /*!< The current flight dynamics (pitch,yaw,roll) of the drone */
         vec3_t speed;                   /*!< Speed in the x,y,z dirs */
         unsigned int batteryLevel;      /*!< Current battery level of the drone */
-        CImg<unsigned char> videoFrame; /*!< The most recent video frame stored in a CImg */
+        DroneFrame videoFrame;          /*!< The most recent video frame */
     };
     /**
      * Contains all input to be sent to the drone

@@ -44,7 +44,10 @@ namespace fireparrot
         m_droneFeedback->speed[0] = data.speed.vx;
         m_droneFeedback->speed[1] = data.speed.vy;
         m_droneFeedback->speed[2] = data.speed.vz;
-        m_droneFeedback->videoFrame.assign(frame.data, frame.width, frame.height, 1, 3);
+//        m_droneFeedback->videoFrame.assign(frame.data, frame.width, frame.height, 1, 3);
+        m_droneFeedback->videoFrame.width = frame.width;
+        m_droneFeedback->videoFrame.height = frame.height;
+        m_droneFeedback->videoFrame.data = frame.data;
         return m_droneFeedback;
     }
 
