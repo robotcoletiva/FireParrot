@@ -1,33 +1,37 @@
 # CMakeLists for CU-ARdrone
 
-cmake_minimum_required (VERSION 2.6)
-project (fireparrot)
+CMAKE_MINIMUM_REQUIRED (VERSION 2.6)
+PROJECT (fireparrot)
 
 # Build the gamepad lib
-add_subdirectory(gamepad)
-add_subdirectory(dronelib)
-add_subdirectory(libopendrone)
+ADD_SUBDIRECTORY(gamepad)
+ADD_SUBDIRECTORY(dronelib)
+ADD_SUBDIRECTORY(libopendrone)
 
-link_directories (${fireparrot_BINARY_DIR}/gamepad) 
-link_directories (${fireparrot_BINARY_DIR}/dronelib) 
-link_directories (${fireparrot_BINARY_DIR}/libopendrone) 
+IF(CMAKE_COMPILER_IS_GNUCXX)
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=c++0x")
+ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 
-set(DRONE_VERSION_MAJOR 1)
-set(DRONE_VERSION_MINOR 0)
+LINK_DIRECTORIES (${fireparrot_BINARY_DIR}/gamepad) 
+LINK_DIRECTORIES (${fireparrot_BINARY_DIR}/dronelib) 
+LINK_DIRECTORIES (${fireparrot_BINARY_DIR}/libopendrone) 
 
-set(DRONE_HEADERS   DroneConfig.h InputDevice.h Drone.h
-                    XBoxDevice.h DeviceManager.h)
-set(DRONE_SOURCES   main.cpp InputDevice.cpp Drone.cpp
-                    XBoxDevice.cpp DeviceManager.cpp)
-source_group(fireparrot FILES    ${DRONE_HEADERS} ${DRONE_SOURCES})
+SET(DRONE_VERSION_MAJOR 1)
+SET(DRONE_VERSION_MINOR 0)
 
-include_directories("${PROJECT_SOURCE_DIR}")
+SET(DRONE_HEADERS   DroneConfig.h InputDevice.h Drone.h
+                    XBoxDevice.h DeviceManager.h GLRenderFrame.h)
+SET(DRONE_SOURCES   main.cpp InputDevice.cpp Drone.cpp
+                    XBoxDevice.cpp DeviceManager.cpp GLRenderFrame.cpp)
+SOURCE_GROUP(fireparrot FILES    ${DRONE_HEADERS} ${DRONE_SOURCES})
 
-configure_file (
+INCLUDE_DIRECTORIES("${PROJECT_SOURCE_DIR}")
+
+CONFIGURE_FILE (
   "${PROJECT_SOURCE_DIR}/DroneConfig.h.in"
   "${PROJECT_SOURCE_DIR}/DroneConfig.h"
   )
 
-add_executable(fireparrot    ${DRONE_SOURCES} ${DRONE_HEADERS})
+ADD_EXECUTABLE(fireparrot    ${DRONE_SOURCES} ${DRONE_HEADERS})
 
-target_link_libraries(fireparrot gamepad dronelib)
+TARGET_LINK_LIBRARIES(fireparrot gamepad dronelib glfw GL)

@@ -1,7 +1,11 @@
 #ifndef GL_RENDER_FRAME_H
 #define GL_RENDER_FRAME_H
 
+#include <Common.h>
 #include <CImg.h>
+
+#include <thread>
+#include <functional>
 
 using namespace cimg_library; 
 
@@ -18,10 +22,6 @@ namespace fireparrot
          * Default value is 30
          */
         int m_targetFps;
-        /**
-         * Our local copy of the frame to be rendered
-         */
-        CImg<unsigned char> m_renderFrame;
         /**
          * x dimensions of the render frame
          */
@@ -41,7 +41,15 @@ namespace fireparrot
         /**
          * Texture id of our opengl texture
          */ 
-        GLuint m_textureId;
+        int m_textureId;
+        /**
+         * The currently rendering frame
+         */ 
+        DroneFrame m_renderFrame;
+        /**
+         * The thread our render loop is running on
+         */
+        std::thread m_runningThread;
         /**
          * The main render loop
          */
@@ -52,13 +60,23 @@ namespace fireparrot
         virtual ~GLRenderFrame();
 
         /**
+         * Stops the render thread from running
+         */
+        void StopRender();
+        /**
+         * Starts the render frame
+         */
+        void StartRender();
+        /**
          * Updates the target fps
+         * \param targetFps The target fps
          */
         void SetTargetFPS(int targetFps) { m_targetFps = targetFps; }
         /**
          * Update the currently rendering frame
+         * \param img A copy of the DroneFrame struct containing the image
          */
-        void GLRenderFrame::UpdateFrame(CImg<unsigned char> img);
+        void UpdateFrame(DroneFrame img);        
     };
 }
 

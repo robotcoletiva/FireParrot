@@ -4,9 +4,36 @@
 
 namespace fireparrot
 {
-    GLRenderFrame::GLRenderFrame(int width, int height, bool fullscreen)
+    GLRenderFrame::GLRenderFrame(int width, int height, bool fullscreen) throw(DroneException):
             m_frameWidth(width), m_frameHeight(height), m_frameFullscreen(fullscreen), 
-            m_targetFps(30), m_running(false), m_renderFrame(640, 480) // Drone camera only records 640x480
+            m_targetFps(30), m_running(false) 
+    {
+            }
+    
+    GLRenderFrame::~GLRenderFrame()
+    {
+
+    }
+
+    void GLRenderFrame::StartRender()
+    {
+        m_running = true;
+        // Start the render thread
+        m_runningThread = std::thread(std::bind(&GLRenderFrame::RenderLoop, this));
+    }
+    
+    void GLRenderFrame::StopRender()
+    {
+        m_running = false;
+        m_runningThread.join();
+    }
+
+    void GLRenderFrame::UpdateFrame(DroneFrame img)
+    {
+        m_renderFrame = img;
+    }
+
+    void GLRenderFrame::RenderLoop()
     {
         if (glfwInit() != GL_TRUE)
         {
@@ -17,8 +44,8 @@ namespace fireparrot
         {
             mode = GLFW_FULLSCREEN;
         }
-        if (glfwOpenWindow(m_frameWidth, m_frameHeight, 8, 8, 8, 
-                                        8, 0, mode) != GL_TRUE)
+        if (glfwOpenWindow(m_frameWidth, m_frameHeight, 0, 0, 0, 
+                                        8, 0, 0, mode) != GL_TRUE)
         {
             throw DroneException("Unable to open gl window");
         }
@@ -40,33 +67,20 @@ namespace fireparrot
         glDisable(GL_DEPTH_TEST);
     
         // Setup gl texture
-        glGenTextures(1, &m_textureId);
+        glGenTextures(1, (GLuint*)&m_textureId);
         glBindTexture(GL_TEXTURE_2D, m_textureId);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 640, 480, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_renderFrame.data());
-    }
-    
-    GLRenderFrame::~GLRenderFrame()
-    {
-
-    }
-
-    void GLRenderFrame::UpdateFrame(CImg<unsigned char> img)
-    {
-        m_renderFrame = img;
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 640, 480, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_renderFrame.data());
-    }
-
-    void GLRenderFrame::RenderLoop()
-    {
+        //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 640, 480, 0, GL_RGB, GL_UNSIGNED_BYTE, m_renderFrame.data());
 
         while (m_running)
         {
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 640, 480, 0, GL_RGB, GL_UNSIGNED_BYTE, m_renderFrame.data);
+            
+            glClear(GL_COLOR_BUFFER_BIT);
             glColor3f(1.0f, 1.0f, 1.0f);
-            glBindTexture(GL_TEXTURE_2D, m_textureId);
             glBegin(GL_QUADS);
-            glTexCoord2f(0, 480); 
+            glTexCoord2f(0, 480);
             glVertex2f(0, 0);
             glTexCoord2f(640, 480);
             glVertex2f(640, 0);
@@ -75,6 +89,8 @@ namespace fireparrot
             glTexCoord2f(0, 0);
             glVertex2f(0, 480);
             glEnd();
+            glfwSwapBuffers();
         }
+        glfwTerminate();
     } 
 }

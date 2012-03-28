@@ -36,6 +36,7 @@
 #include <iostream>
 
 #include <Drone.h>
+#include <GLRenderFrame.h>
 #include <DeviceManager.h>
 #include <XBoxDevice.h>
 
