@@ -20,6 +20,7 @@ SET(DRONE_VERSION_MAJOR 1)
 SET(DRONE_VERSION_MINOR 0)
 
 SET(DRONE_HEADERS   include/DroneConfig.h
+	            include/Common.h
                     include/InputDevice.h
                     include/Drone.h
                     include/XBoxDevice.h
@@ -35,11 +36,11 @@ SET(DRONE_SOURCES   src/main.cpp
 
 SOURCE_GROUP(fireparrot FILES    ${DRONE_HEADERS} ${DRONE_SOURCES})
 
-INCLUDE_DIRECTORIES("${PROJECT_SOURCE_DIR}/include")
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/include)
 
 CONFIGURE_FILE (
-  "${PROJECT_SOURCE_DIR}/DroneConfig.h.in"
-  "${PROJECT_SOURCE_DIR}/DroneConfig.h"
+  "${PROJECT_SOURCE_DIR}/include/DroneConfig.h.in"
+  "${PROJECT_SOURCE_DIR}/include/DroneConfig.h"
   )
 
 ADD_EXECUTABLE(fireparrot    ${DRONE_SOURCES} ${DRONE_HEADERS})
