@@ -12,15 +12,15 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g -std=c++0x")
 ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 
-LINK_DIRECTORIES (${fireparrot_BINARY_DIR}/gamepad) 
-LINK_DIRECTORIES (${fireparrot_BINARY_DIR}/dronelib) 
-LINK_DIRECTORIES (${fireparrot_BINARY_DIR}/libopendrone) 
+LINK_DIRECTORIES (${fireparrot_BINARY_DIR}/gamepad)
+LINK_DIRECTORIES (${fireparrot_BINARY_DIR}/dronelib)
+LINK_DIRECTORIES (${fireparrot_BINARY_DIR}/libopendrone)
 
 SET(DRONE_VERSION_MAJOR 1)
-SET(DRONE_VERSION_MINOR 0)
+SET(DRONE_VERSION_MINOR 1)
 
 SET(DRONE_HEADERS   include/DroneConfig.h
-	            include/Common.h
+                    include/Common.h
                     include/InputDevice.h
                     include/Drone.h
                     include/XBoxDevice.h
