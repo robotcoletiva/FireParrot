@@ -1,6 +1,8 @@
 #include <XBoxDevice.h>
 #include <GLRenderFrame.h>
 
+#include <cstring>
+
 #include <gamepad/gamepad.h>
 
 namespace fireparrot

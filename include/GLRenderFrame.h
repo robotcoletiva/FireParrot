@@ -2,12 +2,9 @@
 #define GL_RENDER_FRAME_H
 
 #include <Common.h>
-#include <CImg.h>
 
 #include <thread>
 #include <functional>
-
-using namespace cimg_library;
 
 namespace fireparrot
 {

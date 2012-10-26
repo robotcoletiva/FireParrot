@@ -6,10 +6,7 @@
 #include <stdint.h>
 #include <exception>
 
-#include <CImg.h>
 #include <DroneConfig.h>
-
-using namespace cimg_library;
 
 typedef float vec_t;            /* scalar                 */
 typedef vec_t vec2_t[2];        /* two-dimensional vector */
