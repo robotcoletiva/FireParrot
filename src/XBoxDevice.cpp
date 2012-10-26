@@ -1,4 +1,5 @@
 #include <XBoxDevice.h>
+#include <GLRenderFrame.h>
 
 #include <gamepad/gamepad.h>
 
@@ -13,17 +14,21 @@ namespace fireparrot
             throw DroneException("Unable to find gamepad!");
         }
         memset(&m_flightParams, 0, sizeof(m_flightParams));
+        m_renderFrame = new GLRenderFrame(640, 480);
+        m_renderFrame->StartRender();
     }
 
     XBoxDevice::~XBoxDevice()
     {
+        m_renderFrame->StopRender();
+        delete m_renderFrame;
         GamepadShutdown();
     }
 
     void XBoxDevice::PollInput()
     {
         GamepadUpdate(); // Update the status of the pad
-        
+
         // Update flags
         if (GamepadButtonDown(GAMEPAD_0, BUTTON_A))
         {
@@ -41,14 +46,14 @@ namespace fireparrot
         {
             m_flightParams.flags |= FLAG_SWITCHCAM;
         }
-        
+
 
         // Update thrust
-        float positiveThrust = GamepadTriggerLength(GAMEPAD_0, TRIGGER_RIGHT); 
+        float positiveThrust = GamepadTriggerLength(GAMEPAD_0, TRIGGER_RIGHT);
         float negativeThrust = GamepadTriggerLength(GAMEPAD_0, TRIGGER_LEFT);
 
         m_flightParams.flightDynamics[FLIGHT_THRUST] = positiveThrust - negativeThrust;
-        
+
         // Update pitch, yaw, roll
         float xPos, yPos;
         xPos = yPos = 0.0f;
@@ -59,14 +64,14 @@ namespace fireparrot
         GamepadStickNormXY(GAMEPAD_0, STICK_RIGHT, &xPos, &yPos);
         m_flightParams.flightDynamics[FLIGHT_YAW] = xPos;
     }
-    
+
     void XBoxDevice::ProcessVideo()
     {
-        
+        m_renderFrame->UpdateFrame(m_data->videoFrame);
     }
 
     void XBoxDevice::TrackSensors()
     {
-        
+
     }
 }

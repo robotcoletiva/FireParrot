@@ -18,7 +18,7 @@
 #include <vector>
 
 #ifndef __APPLE__
-#include "malloc.h"    
+#include "malloc.h"
 #endif
 #include "stdlib.h"
 
@@ -31,18 +31,18 @@ int nomain(int argc, char** argv)
 {
   ARDrone::Controller Controller;
   ARDrone::NavigationData navData;
-  try 
+  try
   {
     Controller.connectWithDroneAtAddress("192.168.1.1");
     ccxx::Thread::sleep(200);
     ARDrone::NavigationDataReceiver navDataReceiver(&Controller, "192.168.1.1");
     navDataReceiver.start();
     ccxx::Thread::sleep(200);
-    
+
     ARDrone::VideoDataReceiver vdoDataReceiver(&Controller, "192.168.1.1");
     vdoDataReceiver.start();
     ccxx::Thread::sleep(200);
-    
+
     Controller.switchToFrontCamera();
     ARDrone::VideoDecoder::Image image;
     for(int i = 0; i < 1000; i++)
@@ -50,21 +50,21 @@ int nomain(int argc, char** argv)
       Controller.sendWatchDogReset();
 
       ccxx::Thread::sleep(200);
-      
+
       navDataReceiver.copyDataTo(navData);
       std::cout << "->" << navData.orientation.pitch << ','
       << navData.orientation.roll << ','
       << navData.orientation.yaw << std::endl;
-      
+
       vdoDataReceiver.copyDataTo(image);
-      
+
       //std::cout << "w->" << width << ",h->" << height << std::endl;
-      
-    } 
+
+    }
     navDataReceiver.stop();
     vdoDataReceiver.stop();
   }
-  catch(ccxx::Exception& ex) 
+  catch(ccxx::Exception& ex)
   {
     std::cout << ex.what() << std::endl;
   }
@@ -74,8 +74,8 @@ int nomain(int argc, char** argv)
 ////////////////////////////////////////////////
 #define NAVDATA_DEMO_TAG (0)
 #define NAVDATA_TIME_TAG (1)
-#define NAVDATA_RAW_MEASURES_TAG (2) 
-#define NAVDATA_PHYS_MEASURES_TAG (3) 
+#define NAVDATA_RAW_MEASURES_TAG (2)
+#define NAVDATA_PHYS_MEASURES_TAG (3)
 #define NAVDATA_GYROS_OFFSETS_TAG (4)
 #define NAVDATA_EULER_ANGLES_TAG (5)
 #define NAVDATA_REFERENCES_TAG (6)
@@ -106,34 +106,34 @@ namespace ARDrone
   /////////////////////////////////////////////////////
   Drone::Drone()
   {
-     
+
   }
-  
+
   Drone::~Drone()
   {
-    
+
   }
-  
+
   bool Drone::start()
   {
-    try 
+    try
     {
       myController = new ARDrone::Controller;
-      myVideoDataReceiver = new ARDrone::VideoDataReceiver(myController,  "192.168.1.1"); 
+      myVideoDataReceiver = new ARDrone::VideoDataReceiver(myController,  "192.168.1.1");
       myNavigationDataReceiver = new ARDrone::NavigationDataReceiver(myController,  "192.168.1.1");
-      
-      
+
+
       myController->connectWithDroneAtAddress("192.168.1.1");
       ccxx::Thread::sleep(200);
-      
+
       myNavigationDataReceiver->start();
       ccxx::Thread::sleep(200);
-    
+
       myVideoDataReceiver->start();
       ccxx::Thread::sleep(200);
       return true;
     }
-    catch(ccxx::Exception& ex) 
+    catch(ccxx::Exception& ex)
     {
       std::cout << ex.what() << std::endl;
       delete myVideoDataReceiver;
@@ -142,34 +142,34 @@ namespace ARDrone
       return false;
     }
   }
-  
+
   void Drone::stop()
   {
-    try 
+    try
     {
       myNavigationDataReceiver->stop();
       myVideoDataReceiver->stop();
     }
-    catch(ccxx::Exception& ex) 
+    catch(ccxx::Exception& ex)
     {
       std::cout << ex.what() << std::endl;
     }
-    
+
     delete myVideoDataReceiver;
     delete myNavigationDataReceiver;
     delete myController;
   }
-  
+
   ARDrone::Controller& Drone::controller()
   {
     return *myController;
   }
-  
+
   ARDrone::VideoDataReceiver& Drone::videoDataReceiver()
   {
     return *myVideoDataReceiver;
   }
-  
+
   ARDrone::NavigationDataReceiver& Drone::navigationDataReceiver()
   {
     return *myNavigationDataReceiver;
@@ -178,15 +178,15 @@ namespace ARDrone
   const int kNavigationDataPort = 5554;
   const int kOnBoardVideoPort = 5555;
   const int kATCommandPort = 5556;
-  
-  
+
+
   //NavData offset
   const int kNavigationDataOffsetOfStateData    =  4;
   const int kNavigationDataOffsetOfBatteryData  = 24;
   const int kNavigationDataOffsetOfAltitudeData = 40;
-  
+
   const unsigned int INTERVAL = 100;
-  
+
   ///
   unsigned int myNextATSequence;
   unsigned int myLastATSequence;
@@ -208,19 +208,19 @@ namespace ARDrone
     myLastATSequence = 1;
     myDatagram.init();
   }
-  
+
   CommunicationChannel::~CommunicationChannel()
   {
     disconnectFromDrone();
   }
-  
+
   void CommunicationChannel::connectWithDroneAtAddress(const char* szDroneIpAddress, int iPort)
   {
     ccxx::String strAddr(szDroneIpAddress);
     myDatagram.connect(strAddr, iPort);
     myDatagram.setTimeout(3000);
   }
-  
+
   void CommunicationChannel::disconnectFromDrone()
   {
     if(isConnectedWithDrone())
@@ -228,17 +228,17 @@ namespace ARDrone
       myDatagram.shutdown();
     }
   }
-  
+
   void CommunicationChannel::setTimeout(int t)
   {
     myDatagram.setTimeout(t);
   }
-  
+
   bool CommunicationChannel::isConnectedWithDrone()
   {
     return myDatagram.isConnected();
   }
-  
+
   void CommunicationChannel::send(unsigned char* bytes, unsigned int length)
   {
     synchronized(myMutex)
@@ -246,13 +246,13 @@ namespace ARDrone
       myDatagram.send(bytes, length);
     }
   }
-  
+
   void CommunicationChannel::receive(unsigned char* bytes, unsigned int& bufferLength)
-  {  
+  {
     int actualReceivedLength = myDatagram.receive(bytes, bufferLength);
     bufferLength = actualReceivedLength;
   }
-  
+
   void CommunicationChannel::sendAT(const char* szHeader, const char* szDetail, unsigned int mssleep)
   {
     //synchronized(myMutex)
@@ -268,7 +268,7 @@ namespace ARDrone
         ccxx::Thread::sleep(mssleep);
     }
   }
-  
+
 
   unsigned int CommunicationChannel::nextATSequence()
   {
@@ -277,7 +277,7 @@ namespace ARDrone
       return myNextATSequence++;
     }
   }
-  
+
   ARDrone::ATCommand CommunicationChannel::lastATCommand()
   {
     synchronized(myMutex)
@@ -285,16 +285,16 @@ namespace ARDrone
       return myLastATCommand;
     }
   }
-  
+
   //////////////////////////////////////////////////
   Controller::Controller()
   {
   }
-  
+
   Controller::~Controller()
   {
   }
-  
+
   void Controller::connectWithDroneAtAddress(const char* szDroneIpAddress)
   {
     if(true == myCommunicationChannel.isConnectedWithDrone())
@@ -313,63 +313,63 @@ namespace ARDrone
     //myCommunicationChannel.sendAT("AT*CONFIG=", ",\"network:owner_mac\",\"00:23:CD:5D:92:37\""); //AP
     myCommunicationChannel.sendAT("AT*CONFIG=", ",\"pic:ultrasound_freq\",\"8\"");
     myCommunicationChannel.sendAT("AT*FTRIM=", ""); //flat trim
-    
+
     myCommunicationChannel.sendAT("AT*REF=", ",290717696");
     sendControlParameters(0, 0, 0, 0, 0);
     myCommunicationChannel.sendAT("AT*REF=", ",290717696");
     myCommunicationChannel.sendAT("AT*REF=", ",290717696");
   }
-  
+
   void Controller::sendWatchDogReset()
   {
     myCommunicationChannel.sendAT("AT*COMWDG=", "");
   }
-  
+
   void Controller::requestNavigationData()
   {
     myCommunicationChannel.sendAT("AT*CONFIG=", ",\"general:navdata_demo\",\"TRUE\"", 20);
   }
-  
+
   void Controller::requestVideoData()
   {
     myCommunicationChannel.sendAT("AT*CONFIG=", ",\"general:video_enable\",\"TRUE\"", 10);
   }
-  
+
   void Controller::sendFlatTrim()
   {
     myCommunicationChannel.sendAT("AT*FTRIM=", "");
   }
-  
+
   void Controller::switchToFrontCamera()
   {
     myCommunicationChannel.sendAT("AT*ZAP=", "0");
   }
-  
+
   void Controller::switchToDownCamera()
   {
     myCommunicationChannel.sendAT("AT*ZAP=", "2");
   }
-  
+
   void Controller::takeOff()
   {
     myCommunicationChannel.sendAT("AT*REF=", ",290718208");
   }
-  
+
   void Controller::land()
   {
     myCommunicationChannel.sendAT("AT*REF=", ",290717696");
   }
-  
+
   void Controller::sendEmergencyShutdown()
   {
     myCommunicationChannel.sendAT("AT*REF=", ",290717952"); //toggle Emergency
   }
-  
+
   void Controller::hover()
   {
     sendControlParameters(0, 0, 0, 0, 0);
   }
-  
+
   void Controller::sendControlParameters(int enable, float pitch, float roll, float yaw, float gaz)
   {
     std::stringstream strStm;
@@ -378,24 +378,24 @@ namespace ARDrone
            << floatToIntegerByteByByte(pitch) << ','
            << floatToIntegerByteByByte(gaz) << ','
            << floatToIntegerByteByByte(yaw);
-    
+
     myCommunicationChannel.sendAT("AT*PCMD=", strStm.str().c_str());
   }
-  
+
   void Controller::sendLastCommand()
   {
     ARDrone::ATCommand cmd = myCommunicationChannel.lastATCommand();
     myCommunicationChannel.sendAT(cmd.strCommandHeader.c_str(), cmd.strCommandData.c_str());
   }
-  
+
   void Controller::disableAdaptiveVideo()
   {
     //ardrone_at_set_toy_configuration("video:bitrate_ctrl_mode","0")
     //"AT*CONFIG=%d,\"%s\",\"%s\"\r",
-    
+
     myCommunicationChannel.sendAT("AT*CONFIG=", "video:bitrate_ctrl_mode,0");
   }
-  
+
   /* ARDroneME --- Java (J2ME) based AR.Drone Controller
    Author: MAPGPS at
    http://www.ardrone-flyers.com/forum/viewforum.php?f=8
@@ -404,15 +404,15 @@ namespace ARDrone
    http://www.ourdev.cn/bbs/bbs_list.jsp?bbs_id=1025
    http://bbs.5imx.com/bbs/viewthread.php?tid=415063
    Initial: 2011.03.13
-   
-   
+
+
    ########## Keyboad Layout ############
    Takeoff/Landing: a toggle button (or MediaPlayer button)
    Emergency: "E" button (or Camera button), only effective after Landing button pressed first)
    Hovering: when the Arrow button loosed
    Speed(%) slider: change rudder rate in range of 0%~90%
    Arrow Keys and 2 Soft-Joysticks on the touch screen are linked.
-   
+
    Arrow Keys:
    Go Up
    ^
@@ -421,7 +421,7 @@ namespace ARDrone
    |
    v
    Go Down
-   
+
    Arrow Keys with central button pressed down (Shift):
    Go Forward
    ^
@@ -430,7 +430,7 @@ namespace ARDrone
    |
    v
    Go Backward
-   
+
    UI_BIT:
    00010001010101000000000000000000
    |   | | | |        || | ||||+--0: Button turn to left
@@ -446,7 +446,7 @@ namespace ARDrone
    |   | +-----------------------22: z-axis trim +1 (Trim increase at +/- 1??/s)
    |   +-------------------------24: x-axis +1
    +-----------------------------28: y-axis +1
-   
+
    AT*REF=<sequence>,<UI>
    AT*PCMD=<sequence>,<enable>,<roll>,<pitch>,<gaz>,<yaw>
    (float)0.05 = (int)1028443341           (float)-0.05 = (int)-1119040307
@@ -455,7 +455,7 @@ namespace ARDrone
    (float)0.5  = (int)1056964608           (float)-0.5  = (int)-1090519040
    AT*ANIM=<sequence>,<animation>,<duration>
    AT*CONFIG=<sequence>,\"<name>\",\"<value>\"
-   
+
    ########## AT Commands ############
    altitude max2m: AT*CONFIG=1,\"control:altitude_max\",\"2000\"   //10000=unlimited
    Takeoff:        AT*REF=1,290718208
@@ -474,14 +474,14 @@ namespace ARDrone
    Emergency       AT*REF=1,290717952
    Flat Trim:      AT*FTRIM=1
    */
-  
+
   ///////////////////////////////////////////////
   NavigationDataReceiver::NavigationDataReceiver(ARDrone::Controller* pController, const char* szDroneIpAddress)
   {
     myDroneAddress = szDroneIpAddress;
     myController = pController;
   }
-  
+
   NavigationDataReceiver::~NavigationDataReceiver() throw ()
   {
     if(true == isRunning())
@@ -492,25 +492,25 @@ namespace ARDrone
         join();
         myCommunicationChannel.disconnectFromDrone();
       }
-      catch (ccxx::Exception& ex) 
+      catch (ccxx::Exception& ex)
       {
         std::cout << ex.what() << std::endl;
       }
     }
   }
-  
+
   /*
-   By looking at navData.c you can calculate the byte offsets yourself with basic math. 
-   You know from MAPGPS that the battery (vbat_flying_percentage) is an offset of 24, 
-   if you simply start there adding 4 for each 32 bit value, you can easily find the offsets 
-   for the rest of the data. For example, theta is the next value from vbat_flying_percentage 
-   in the navdata_demo struct, thus theta is an offset 28. phi is 32, psi is 36. After psi you 
-   reach altitude that was also defined by MAPGPS to be an offset of 40. Once you get a little 
-   further into the struct, and you find the matrix33 (contains 9 32 bit values) and vector31 
-   (contains 3 32 bit values) values, you will need do do those calculations also. If you do get 
+   By looking at navData.c you can calculate the byte offsets yourself with basic math.
+   You know from MAPGPS that the battery (vbat_flying_percentage) is an offset of 24,
+   if you simply start there adding 4 for each 32 bit value, you can easily find the offsets
+   for the rest of the data. For example, theta is the next value from vbat_flying_percentage
+   in the navdata_demo struct, thus theta is an offset 28. phi is 32, psi is 36. After psi you
+   reach altitude that was also defined by MAPGPS to be an offset of 40. Once you get a little
+   further into the struct, and you find the matrix33 (contains 9 32 bit values) and vector31
+   (contains 3 32 bit values) values, you will need do do those calculations also. If you do get
    that far in, to check your work i can confirm that drone_camera_trans x (the drones calculated
    x position from take off using the bottom camera) is 152. Good luck.
-   
+
    static final int NAV_PORT = 5554;
    static final int NAV_STATE_OFFSET   =  4;
    static final int NAV_BATTERY_OFFSET = 24;
@@ -518,7 +518,7 @@ namespace ARDrone
    static final int NAV_ROLL_OFFSET    = 32;
    static final int NAV_YAW_OFFSET     = 36;
    static final int NAV_ALTITUDE_OFFSET= 40;
-   
+
    //Reuse some fields for NavData2 from Arduino sensor board with GPS/Compass/Barometer
    static final int NAV_LATITUDE_OFFSET        = 44;
    static final int NAV_LONGITUDE_OFFSET       = 48;
@@ -526,23 +526,23 @@ namespace ARDrone
    static final int NAV_ALTITUDE_US_OFFSET     = 56;
    static final int NAV_ALTITUDE_BARO_OFFSET   = 60;
    static final int NAV_ALTITUDE_BARO_RAW_OFFSET = 64;
-   
-   static final int MYKONOS_TRIM_COMMAND_MASK   = 1 <<  7; /*!< Trim command ACK : (0) None, (1) one received 
-  static final int MYKONOS_TRIM_RUNNING_MASK   = 1 <<  8; /*!< Trim running : (0) none, (1) running 
-  static final int MYKONOS_TRIM_RESULT_MASK    = 1 <<  9; /*!< Trim result : (0) failed, (1) succeeded 
-  static final int MYKONOS_ANGLES_OUT_OF_RANGE = 1 << 19; /*!< Angles : (0) Ok, (1) out of range 
-  static final int MYKONOS_WIND_MASK           = 1 << 20; /*!< Wind : (0) Ok, (1) too much to fly 
-  static final int MYKONOS_ULTRASOUND_MASK     = 1 << 21; /*!< Ultrasonic sensor : (0) Ok, (1) deaf 
-  static final int MYKONOS_CUTOUT_MASK         = 1 << 22; /*!< Cutout system detection : (0) Not detected, (1) detected 
-  static final int MYKONOS_COM_WATCHDOG_MASK   = 1 << 30; /*!< Communication Watchdog : (1) com problem, (0) Com is ok 
-  static final int MYKONOS_EMERGENCY_MASK      = 1 << 31; /*!< Emergency landing : (0) no emergency, (1) emergency 
-   
+
+   static final int MYKONOS_TRIM_COMMAND_MASK   = 1 <<  7; /*!< Trim command ACK : (0) None, (1) one received
+  static final int MYKONOS_TRIM_RUNNING_MASK   = 1 <<  8; /*!< Trim running : (0) none, (1) running
+  static final int MYKONOS_TRIM_RESULT_MASK    = 1 <<  9; /*!< Trim result : (0) failed, (1) succeeded
+  static final int MYKONOS_ANGLES_OUT_OF_RANGE = 1 << 19; /*!< Angles : (0) Ok, (1) out of range
+  static final int MYKONOS_WIND_MASK           = 1 << 20; /*!< Wind : (0) Ok, (1) too much to fly
+  static final int MYKONOS_ULTRASOUND_MASK     = 1 << 21; /*!< Ultrasonic sensor : (0) Ok, (1) deaf
+  static final int MYKONOS_CUTOUT_MASK         = 1 << 22; /*!< Cutout system detection : (0) Not detected, (1) detected
+  static final int MYKONOS_COM_WATCHDOG_MASK   = 1 << 30; /*!< Communication Watchdog : (1) com problem, (0) Com is ok
+  static final int MYKONOS_EMERGENCY_MASK      = 1 << 31; /*!< Emergency landing : (0) no emergency, (1) emergency
+
    arcanvas.battery = get_int(navdata, NAV_BATTERY_OFFSET);
    arcanvas.altitude = ((float)get_int(navdata, NAV_ALTITUDE_OFFSET)/1000);
    attitude_pitch = get_float(navdata, NAV_PITCH_OFFSET)/1000;
    attitude_roll = get_float(navdata, NAV_ROLL_OFFSET)/1000;
    attitude_yaw = get_float(navdata, NAV_YAW_OFFSET)/1000;
-   
+
    arcanvas.latitude = get_float(navdata, NAV_LATITUDE_OFFSET);
    arcanvas.longitude = get_float(navdata, NAV_LONGITUDE_OFFSET);
    arcanvas.heading = get_float(navdata, NAV_HEADING_OFFSET);
@@ -554,21 +554,21 @@ namespace ARDrone
   {
     std::cout << "NavigationDataReceiver started\n";
     int cnt = 0;
-    try 
+    try
     {
       myCommunicationChannel.connectWithDroneAtAddress(myDroneAddress.c_str(), kNavigationDataPort);
       myCommunicationChannel.setTimeout(3000);
-      
+
       unsigned char trigger[4] = {0x01, 0x00, 0x00, 0x00};
       myCommunicationChannel.send(trigger, 4);
-      
-      
-      
+
+
+
       unsigned char navDataDemo[10240];
       unsigned int navDataLength = 10240;
       while(false == testCancel())
       {
-        try 
+        try
         {
           myController->requestNavigationData();
           myCommunicationChannel.receive(navDataDemo, navDataLength);
@@ -583,21 +583,21 @@ namespace ARDrone
             }
           }
         }
-        catch (ccxx::TimeoutException& timeoutEx) 
+        catch (ccxx::TimeoutException& timeoutEx)
         {
           std::cout << "NavigationDataReceiver TIMEOUT exception thrown.." << timeoutEx.what() << std::endl;
         }
-        catch (ccxx::Exception& ex) 
+        catch (ccxx::Exception& ex)
         {
           std::cout << "NavigationDataReceiver exception thrown.." << ex.what() << std::endl;
         }
       }//while
     }
-    catch (ccxx::Exception& ex) 
+    catch (ccxx::Exception& ex)
     {
       std::cout << "NavigationDataReceiver exception thrown.." << ex.what() << std::endl;
     }
-    
+
     std::cout << "NavigationDataReceiver stopped\n";
   }
   ////////
@@ -610,17 +610,17 @@ namespace ARDrone
       std::cout << "NavigationDataReceiver FAIL, because the header != 0x55667788\n";
       return false;
     }
-    
+
     offset += 4;
     int state = buffer.MakeValueFromOffset<int32_t>(offset);
     parseState(state);
-    
+
     offset += 4;
     myNavData.sequence = buffer.MakeValueFromOffset<int32_t>(offset);
-    
+
     offset += 4;
     // int vision_tag;
-    
+
     offset += 4;
     while(offset < buffer.Size())
     {
@@ -628,26 +628,26 @@ namespace ARDrone
       offset += 2;
       int option_len = (int)buffer.MakeValueFromOffset<unsigned short>(offset);
       offset += 2;
-      
+
       if(option_len == 0)
       {
         std::cout << "NavigationDataReceiver FAIL, option_len == 0\n";
         return false;
       }
-      
+
       switch(option_tag)
       {
         case NAVDATA_DEMO_TAG: parseNavigation(buffer, offset); break;
         case NAVDATA_CKS_TAG:  break;
         case NAVDATA_VISION_DETECT_TAG: parseVision(buffer, offset); break;
       }
-      
+
       offset = offset + option_len - 4;
     } //while
-    
+
     return true;
   }
-  
+
   bool NavigationDataReceiver::parseState(int state)
   {
     myNavData.flying = (state & 1) != 0;
@@ -683,7 +683,7 @@ namespace ARDrone
     myNavData.emergency = (state & (1 << 31)) != 0;
     return true;
   }
-  
+
   bool NavigationDataReceiver::parseNavigation(MemoryLibrary::Buffer& buffer, int offset)
   {
     int temp = buffer.MakeValueFromOffset<int32_t>(offset);
@@ -706,31 +706,31 @@ namespace ARDrone
     myNavData.speed.vz = buffer.MakeValueFromOffset<float32_t>(offset);
     offset += 4;
   }
-  
+
   bool NavigationDataReceiver::parseVision(MemoryLibrary::Buffer& buffer, int offset)
   {
     int nbDetected = buffer.MakeValueFromOffset<int32_t>(offset);
     offset += 4;
-    
+
     if(0 == nbDetected) // not detecting anything
       return true;
     myNavData.visionTagVector.resize(0);
     for(int i = 0; i < nbDetected; i++)
     {
       ARDrone::NavigationData::VisionTag visionTag;
-      
+
       visionTag.type = buffer.MakeValueFromOffset<int32_t>(offset + 4 * i);
       visionTag.x = buffer.MakeValueFromOffset<int32_t>(offset + 4 * i + 1 * nbDetected * 4);
       visionTag.y = buffer.MakeValueFromOffset<int32_t>(offset + 4 * i + 2 * nbDetected * 4);
       visionTag.width = buffer.MakeValueFromOffset<int32_t>(offset + 4 * i + 3 * nbDetected * 4);
       visionTag.height = buffer.MakeValueFromOffset<int32_t>(offset + 4 * i + 4 * nbDetected * 4);
       visionTag.distance = buffer.MakeValueFromOffset<int32_t>(offset + 4 * i + 5 * nbDetected * 4);
-      
+
       myNavData.visionTagVector.push_back(visionTag);
     }
     return true;
   }
-  
+
   void NavigationDataReceiver::copyDataTo(ARDrone::NavigationData& data)
   {
     synchronized(myMutex)
@@ -739,14 +739,14 @@ namespace ARDrone
       data = myNavData;
     }
   }
-  
+
   ////////////////////////////////////////////////////////////////////////
   VideoDataReceiver::VideoDataReceiver(ARDrone::Controller* pController, const char* szDroneIpAddress)
   {
     myDroneAddress = szDroneIpAddress;
     myController = pController;
   }
-  
+
   VideoDataReceiver::~VideoDataReceiver() throw ()
   {
     if(true == isRunning())
@@ -757,30 +757,30 @@ namespace ARDrone
         join();
         myCommunicationChannel.disconnectFromDrone();
       }
-      catch (ccxx::Exception& ex) 
+      catch (ccxx::Exception& ex)
       {
         std::cout << ex.what() << std::endl;
       }
     }
   }
-  
+
   void VideoDataReceiver::run()
   {
     std::cout << "VideoDataReceiver started\n";
-    try 
+    try
     {
       myCommunicationChannel.connectWithDroneAtAddress(myDroneAddress.c_str(), kOnBoardVideoPort);
       myCommunicationChannel.setTimeout(3000);
       myController->disableAdaptiveVideo();
       unsigned char trigger[4] = {0x01, 0x00, 0x00, 0x00};
       myCommunicationChannel.send(trigger, 4);
-      
+
       myController->requestVideoData();
       while(false == testCancel())
       {
-        try 
+        try
         {
-          
+
           synchronized(myMutex)
           {
             videoDataLength = 921600;
@@ -789,24 +789,24 @@ namespace ARDrone
             //::Thread::sleep(20);
           }
         }
-        catch (ccxx::TimeoutException& timeoutEx) 
+        catch (ccxx::TimeoutException& timeoutEx)
         {
           std::cout << "VideoDataReceiver TIMEOUT exception thrown.." << timeoutEx.what() << std::endl;
         }
-        catch (ccxx::Exception& ex) 
+        catch (ccxx::Exception& ex)
         {
           std::cout << "VideoDataReceiver exception thrown.." << ex.what() << std::endl;
         }
       }//while
     }
-    catch (ccxx::Exception& ex) 
+    catch (ccxx::Exception& ex)
     {
       std::cout << "VideoDataReceiver exception thrown.." << ex.what() << std::endl;
     }
-    
+
     std::cout << "VideoDataReceiver stopped\n";
   }
-  
+
   void VideoDataReceiver::copyDataTo(ARDrone::VideoDecoder::Image& resultImage)
   {
     synchronized(myMutex)
@@ -815,33 +815,33 @@ namespace ARDrone
       //::printf("%d, %d\n", resultImage.width, resultImage.height);
     }
   }
-  
+
   ////////////////////////////////////////////////////////
   // VideoDecoder starts here
   ////////////////////////////////////////////////////////
   namespace VideoDecoder
   {
-    struct RGB24BitsColor 
+    struct RGB24BitsColor
     {
       unsigned char red, green, blue;
     };
-    
+
     RGB24BitsColor* RGB24OutputPixelData = NULL;
-    
+
     const int kPictureFormatCIF = 1;
     const int kPictureFormatVGA = 2;
-    
+
     const int CONST_BlockWidth = 8;
     const int CONST_BlockSize = 64;
-    
+
     const int CONST_WidthCif = 88;
     const int CONST_HeightCif = 72;
-    
+
     const int CONST_WidthVga = 160;
     const int CONST_HeightVga = 120;
-    
+
     const int CONST_TableQuantization = 31;
-    
+
     const int FIX_0_298631336 = 2446;
     const int FIX_0_390180644 = 3196;
     const int FIX_0_541196100 = 4433;
@@ -854,18 +854,18 @@ namespace ARDrone
     const int FIX_2_053119869 = 16819;
     const int FIX_2_562915447 = 20995;
     const int FIX_3_072711026 = 25172;
-    
+
     const int CONST_BITS = 13;
     const int PASS1_BITS = 1;
     int F1 = CONST_BITS - PASS1_BITS - 1;
     int F2 = CONST_BITS - PASS1_BITS;
     int F3 = CONST_BITS + PASS1_BITS + 3;
-    
-    
-    
-    short dataBlockBuffer[64]; 
-    
-    static short zigZagPositions[] =   
+
+
+
+    short dataBlockBuffer[64];
+
+    static short zigZagPositions[] =
     {
       0,  1,  8, 16,  9,  2,  3, 10,
       17, 24, 32, 25, 18, 11,  4,  5,
@@ -876,7 +876,7 @@ namespace ARDrone
       58, 59, 52, 45, 38, 31, 39, 46,
       53, 60, 61, 54, 47, 55, 62, 63,
     };
-    
+
     static short allzeros[] =
     {
       0, 0, 0, 0, 0, 0, 0, 0,
@@ -888,13 +888,13 @@ namespace ARDrone
       0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0,
     };
-    
+
     //Cfr. Handbook of Data Compression - Page 529
     //David Salomon
     //Giovanni Motta
-    
-    static short quantizerValues[] = 
-    {  
+
+    static short quantizerValues[] =
+    {
       3,  5,  7,  9, 11, 13, 15, 17,
       5,  7,  9, 11, 13, 15, 17, 19,
       7,  9, 11, 13, 15, 17, 19, 21,
@@ -904,102 +904,102 @@ namespace ARDrone
       15, 17, 19, 21, 23, 25, 27, 29,
       17, 19, 21, 23, 25, 27, 29, 31
     };
-    
-    static unsigned char clzlut[] = 
-    { 
-      8,7,6,6,5,5,5,5, 
-      4,4,4,4,4,4,4,4, 
-      3,3,3,3,3,3,3,3, 
-      3,3,3,3,3,3,3,3, 
-      2,2,2,2,2,2,2,2, 
-      2,2,2,2,2,2,2,2, 
-      2,2,2,2,2,2,2,2, 
-      2,2,2,2,2,2,2,2, 
-      1,1,1,1,1,1,1,1, 
-      1,1,1,1,1,1,1,1, 
-      1,1,1,1,1,1,1,1, 
-      1,1,1,1,1,1,1,1, 
-      1,1,1,1,1,1,1,1, 
-      1,1,1,1,1,1,1,1, 
-      1,1,1,1,1,1,1,1, 
-      1,1,1,1,1,1,1,1, 
-      0,0,0,0,0,0,0,0, 
-      0,0,0,0,0,0,0,0, 
-      0,0,0,0,0,0,0,0, 
-      0,0,0,0,0,0,0,0, 
-      0,0,0,0,0,0,0,0, 
-      0,0,0,0,0,0,0,0, 
-      0,0,0,0,0,0,0,0, 
-      0,0,0,0,0,0,0,0, 
-      0,0,0,0,0,0,0,0, 
-      0,0,0,0,0,0,0,0, 
-      0,0,0,0,0,0,0,0, 
-      0,0,0,0,0,0,0,0, 
-      0,0,0,0,0,0,0,0, 
-      0,0,0,0,0,0,0,0, 
-      0,0,0,0,0,0,0,0, 
-      0,0,0,0,0,0,0,0 
+
+    static unsigned char clzlut[] =
+    {
+      8,7,6,6,5,5,5,5,
+      4,4,4,4,4,4,4,4,
+      3,3,3,3,3,3,3,3,
+      3,3,3,3,3,3,3,3,
+      2,2,2,2,2,2,2,2,
+      2,2,2,2,2,2,2,2,
+      2,2,2,2,2,2,2,2,
+      2,2,2,2,2,2,2,2,
+      1,1,1,1,1,1,1,1,
+      1,1,1,1,1,1,1,1,
+      1,1,1,1,1,1,1,1,
+      1,1,1,1,1,1,1,1,
+      1,1,1,1,1,1,1,1,
+      1,1,1,1,1,1,1,1,
+      1,1,1,1,1,1,1,1,
+      1,1,1,1,1,1,1,1,
+      0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0
     };
-    
+
     unsigned int StreamField;
     int StreamFieldBitIndex;
     int StreamIndex;
-    
+
     bool PictureComplete;
-    
+
     int PictureFormat;
     int Resolution;
     int PictureType;
     int QuantizerMode;
     int FrameIndex;
-    
+
     int SliceCount;
     int SliceIndex;
-    
+
     int BlockCount;
-    
+
     int Width = -1;
     int Height = -1;
-    
+
     int PixelRowSize;
-    
+
     unsigned char* ImageStream;
     unsigned int ImageStreamLength = 0;
-    
+
     std::vector<unsigned short> PixelData;
-    
+
     struct MacroBlock
     {
-      short DataBlocks[8][64]; 
+      short DataBlocks[8][64];
     }; // MacroBlock
-    
+
     struct ImageSlice
     {
       std::vector< ARDrone::VideoDecoder::MacroBlock > MacroBlocks;
-      
+
       void setSize(int macroBlockCount)
       {
         MacroBlocks.resize(macroBlockCount);
       }
-      
+
     }; //ImageSlice
-    
+
     ////////////////////////////////////////////
     ARDrone::VideoDecoder::ImageSlice ImageSlice;
     ////////////////////////////////////////////
-    
-    
+
+
     void InverseTransform(int macroBlockIndex, int dataBlockIndex)
     {
       int workSpace[64];
       short data[64];
-      
+
       int z1, z2, z3, z4, z5;
       int tmp0, tmp1, tmp2, tmp3;
       int tmp10, tmp11, tmp12, tmp13;
-      
+
       int pointer = 0;
-      
+
       for (int index = 8; index > 0; index--)
       {
         if (dataBlockBuffer[pointer + 8] == 0 &&
@@ -1011,7 +1011,7 @@ namespace ARDrone
             dataBlockBuffer[pointer + 56] == 0)
         {
           int dcValue = dataBlockBuffer[pointer] << PASS1_BITS;
-          
+
           workSpace[pointer + 0] = dcValue;
           workSpace[pointer + 8] = dcValue;
           workSpace[pointer + 16] = dcValue;
@@ -1020,40 +1020,40 @@ namespace ARDrone
           workSpace[pointer + 40] = dcValue;
           workSpace[pointer + 48] = dcValue;
           workSpace[pointer + 56] = dcValue;
-          
+
           pointer++;
           continue;
         }
-        
+
         z2 = dataBlockBuffer[pointer + 16];
         z3 = dataBlockBuffer[pointer + 48];
-        
+
         z1 = (z2 + z3) * FIX_0_541196100;
         tmp2 = z1 + z3 * -FIX_1_847759065;
         tmp3 = z1 + z2 * FIX_0_765366865;
-        
+
         z2 = dataBlockBuffer[pointer];
         z3 = dataBlockBuffer[pointer + 32];
-        
+
         tmp0 = (z2 + z3) << CONST_BITS;
         tmp1 = (z2 - z3) << CONST_BITS;
-        
+
         tmp10 = tmp0 + tmp3;
         tmp13 = tmp0 - tmp3;
         tmp11 = tmp1 + tmp2;
         tmp12 = tmp1 - tmp2;
-        
+
         tmp0 = dataBlockBuffer[pointer + 56];
         tmp1 = dataBlockBuffer[pointer + 40];
         tmp2 = dataBlockBuffer[pointer + 24];
         tmp3 = dataBlockBuffer[pointer + 8];
-        
+
         z1 = tmp0 + tmp3;
         z2 = tmp1 + tmp2;
         z3 = tmp0 + tmp2;
         z4 = tmp1 + tmp3;
         z5 = (z3 + z4) * FIX_1_175875602;
-        
+
         tmp0 = tmp0 * FIX_0_298631336;
         tmp1 = tmp1 * FIX_2_053119869;
         tmp2 = tmp2 * FIX_3_072711026;
@@ -1062,15 +1062,15 @@ namespace ARDrone
         z2 = z2 * -FIX_2_562915447;
         z3 = z3 * -FIX_1_961570560;
         z4 = z4 * -FIX_0_390180644;
-        
+
         z3 += z5;
         z4 += z5;
-        
+
         tmp0 += z1 + z3;
         tmp1 += z2 + z4;
         tmp2 += z2 + z3;
         tmp3 += z1 + z4;
-        
+
         workSpace[pointer + 0] = ((tmp10 + tmp3 + (1 << F1)) >> F2);
         workSpace[pointer + 56] = ((tmp10 - tmp3 + (1 << F1)) >> F2);
         workSpace[pointer + 8] = ((tmp11 + tmp2 + (1 << F1)) >> F2);
@@ -1079,41 +1079,41 @@ namespace ARDrone
         workSpace[pointer + 40] = ((tmp12 - tmp1 + (1 << F1)) >> F2);
         workSpace[pointer + 24] = ((tmp13 + tmp0 + (1 << F1)) >> F2);
         workSpace[pointer + 32] = ((tmp13 - tmp0 + (1 << F1)) >> F2);
-        
+
         pointer++;
       }
-      
+
       pointer = 0;
-      
+
       for (int index = 0; index < 8; index++)
       {
         z2 = workSpace[pointer + 2];
         z3 = workSpace[pointer + 6];
-        
+
         z1 = (z2 + z3) * FIX_0_541196100;
         tmp2 = z1 + z3 * -FIX_1_847759065;
         tmp3 = z1 + z2 * FIX_0_765366865;
-        
+
         tmp0 = (workSpace[pointer + 0] + workSpace[pointer + 4]) << CONST_BITS;
         tmp1 = (workSpace[pointer + 0] - workSpace[pointer + 4]) << CONST_BITS;
-        
+
         tmp10 = tmp0 + tmp3;
         tmp13 = tmp0 - tmp3;
         tmp11 = tmp1 + tmp2;
         tmp12 = tmp1 - tmp2;
-        
+
         tmp0 = workSpace[pointer + 7];
         tmp1 = workSpace[pointer + 5];
         tmp2 = workSpace[pointer + 3];
         tmp3 = workSpace[pointer + 1];
-        
+
         z1 = tmp0 + tmp3;
         z2 = tmp1 + tmp2;
         z3 = tmp0 + tmp2;
         z4 = tmp1 + tmp3;
-        
+
         z5 = (z3 + z4) * FIX_1_175875602;
-        
+
         tmp0 = tmp0 * FIX_0_298631336;
         tmp1 = tmp1 * FIX_2_053119869;
         tmp2 = tmp2 * FIX_3_072711026;
@@ -1122,15 +1122,15 @@ namespace ARDrone
         z2 = z2 * -FIX_2_562915447;
         z3 = z3 * -FIX_1_961570560;
         z4 = z4 * -FIX_0_390180644;
-        
+
         z3 += z5;
         z4 += z5;
-        
+
         tmp0 += z1 + z3;
         tmp1 += z2 + z4;
         tmp2 += z2 + z3;
         tmp3 += z1 + z4;
-        
+
         data[pointer + 0] = (short)((tmp10 + tmp3) >> F3);
         data[pointer + 7] = (short)((tmp10 - tmp3) >> F3);
         data[pointer + 1] = (short)((tmp11 + tmp2) >> F3);
@@ -1139,11 +1139,11 @@ namespace ARDrone
         data[pointer + 5] = (short)((tmp12 - tmp1) >> F3);
         data[pointer + 3] = (short)((tmp13 + tmp0) >> F3);
         data[pointer + 4] = (short)((tmp13 - tmp0) >> F3);
-        
+
         pointer += 8;
       }
-      
-      
+
+
       {
         short* source = data;
         short* destination = ImageSlice.MacroBlocks[macroBlockIndex].DataBlocks[dataBlockIndex];
@@ -1154,28 +1154,28 @@ namespace ARDrone
           ::memcpy(destination, source, 64 * sizeof(short));
         }
       }
-      
+
     } // inverseTransform
-    
+
     ///////////////////////////////////////////
     int CountLeadingZeros(unsigned int value)
     {
       int accum = 0;
-      
+
       accum += clzlut[value >> 24];
       accum += (accum == 8) ? clzlut[(value >> 16) & 0xFF] : 0;
       accum += (accum == 16) ? clzlut[(value >> 8) & 0xFF] : 0;
       accum += (accum == 24) ? clzlut[value & 0xFF] : 0;
-      
+
       return accum;
     } //CountLeadingZeros
-    
+
     ///////////////////////////////////////////
     unsigned short MakeRgb(int r, int g, int b)
     {
       return (unsigned short)((r << 11) | (g << 5) | b);
     }
-    
+
     ///////////////////////////////////////////
     int Saturate5(int x)
     {
@@ -1183,21 +1183,21 @@ namespace ARDrone
       {
         x = 0;
       }
-      
+
       x >>= 11;
-      
+
       return (x > 0x1F) ? 0x1F : x;
     }
-    
+
     int Saturate6(int x)
     {
       if (x < 0)
       {
         x = 0;
       }
-      
+
       x >>= 10;
-      
+
       return x > 0x3F ? 0x3F : x;
     }
     /////////////////////////////////////////////
@@ -1206,24 +1206,24 @@ namespace ARDrone
       int u, ug, ub;
       int v, vg, vr;
       int r, g, b;
-      
+
       int lumaElementIndex1 = 0;
       int lumaElementIndex2 = 0;
       int chromaOffset = 0;
-      
+
       int dataIndex1 = 0;
       int dataIndex2 = 0;
-      
+
       int lumaElementValue1 = 0;
       int lumaElementValue2 = 0;
       int chromaBlueValue = 0;
       int chromaRedValue = 0;
-      
+
       int cromaQuadrantOffsets[] ={ 0, 4, 32, 36 };
       int pixelDataQuadrantOffsets[] = { 0, CONST_BlockWidth, Width * CONST_BlockWidth, (Width * CONST_BlockWidth) + CONST_BlockWidth };
-      
+
       int imageDataOffset = (SliceIndex - 1) * Width * 16;
-      
+
       //foreach (MacroBlock macroBlock in ImageSlice.MacroBlocks)
       for(int i = 0; i < ImageSlice.MacroBlocks.size(); i++)
       {
@@ -1233,10 +1233,10 @@ namespace ARDrone
           chromaOffset = verticalStep * CONST_BlockWidth;
           lumaElementIndex1 = verticalStep * CONST_BlockWidth * 2;
           lumaElementIndex2 = lumaElementIndex1 + CONST_BlockWidth;
-          
+
           dataIndex1 = imageDataOffset + (2 * verticalStep * Width);
           dataIndex2 = dataIndex1 + Width;
-          
+
           for (int horizontalStep = 0; horizontalStep < CONST_BlockWidth / 2; horizontalStep++)
           {
             for (int quadrant = 0; quadrant < 4; quadrant++)
@@ -1244,39 +1244,39 @@ namespace ARDrone
               int chromaIndex = chromaOffset + cromaQuadrantOffsets[quadrant] + horizontalStep;
               chromaBlueValue = macroBlock.DataBlocks[4][chromaIndex];
               chromaRedValue = macroBlock.DataBlocks[5][chromaIndex];
-              
+
               u = chromaBlueValue - 128;
               ug = 88 * u;
               ub = 454 * u;
-              
+
               v = chromaRedValue - 128;
               vg = 183 * v;
               vr = 359 * v;
-              
+
               for (int pixel = 0; pixel < 2; pixel++)
               {
                 int deltaIndex = 2 * horizontalStep + pixel;
                 lumaElementValue1 = macroBlock.DataBlocks[quadrant][lumaElementIndex1 + deltaIndex] << 8;
                 lumaElementValue2 = macroBlock.DataBlocks[quadrant][lumaElementIndex2 + deltaIndex] << 8;
-                
+
                 r = Saturate5(lumaElementValue1 + vr);
                 g = Saturate6(lumaElementValue1 - ug - vg);
                 b = Saturate5(lumaElementValue1 + ub);
-                
+
                 PixelData[dataIndex1 + pixelDataQuadrantOffsets[quadrant] + deltaIndex] = MakeRgb(r, g, b);
-                
+
                 //?????????????????????????????????//
                 //RGB24OutputPixelData[dataIndex1 + pixelDataQuadrantOffsets[quadrant] + deltaIndex].red = (unsigned char)r;
                 //RGB24OutputPixelData[dataIndex1 + pixelDataQuadrantOffsets[quadrant] + deltaIndex].green = (unsigned char)g;
                 //RGB24OutputPixelData[dataIndex1 + pixelDataQuadrantOffsets[quadrant] + deltaIndex].blue = (unsigned char)b;
                 /////////////////////////////////////
-                
+
                 r = Saturate5(lumaElementValue2 + vr);
                 g = Saturate6(lumaElementValue2 - ug - vg);
                 b = Saturate5(lumaElementValue2 + ub);
-                
+
                 PixelData[dataIndex2 + pixelDataQuadrantOffsets[quadrant] + deltaIndex] = MakeRgb(r, g, b);
-                
+
                 //?????????????????????????????????//
                 //RGB24OutputPixelData[dataIndex2 + pixelDataQuadrantOffsets[quadrant] + deltaIndex].red = (unsigned char)r;
                 //RGB24OutputPixelData[dataIndex2 + pixelDataQuadrantOffsets[quadrant] + deltaIndex].green = (unsigned char)g;
@@ -1286,19 +1286,19 @@ namespace ARDrone
             }
           }
         }
-        
+
         imageDataOffset += 16;
       }
     }
     /////////////////////////////////////////////////
-    
+
     void AlignStreamData()
     {
       int alignedLength;
       int actualLength;
-      
+
       actualLength = StreamFieldBitIndex;
-      
+
       if (actualLength > 0)
       {
         alignedLength = (actualLength & ~7);
@@ -1310,7 +1310,7 @@ namespace ARDrone
         }
       }
     }
-    
+
     ////////////////////////////////////////////////////
     int makeIntFromBytes(unsigned char* buffer, int index)
     {
@@ -1319,103 +1319,103 @@ namespace ARDrone
       b[1] = buffer[index + 1];
       b[2] = buffer[index + 2];
       b[3] = buffer[index + 3];
-      
+
       int Int32;
-      
+
       /*
       Int32 = (Int32 << 8) + b[3];
       Int32 = (Int32 << 8) + b[2];
       Int32 = (Int32 << 8) + b[1];
       Int32 = (Int32 << 8) + b[0];*/
-      
-      
+
+
       ::memcpy(&Int32, b, sizeof(int));
       return Int32;
     }
-    
+
     ////////////////////////////////////////////////////
     unsigned int PeekStreamData(unsigned char* stream, int count)
     {
       unsigned int data = 0;
       unsigned int streamField = StreamField;
       int streamFieldBitIndex = StreamFieldBitIndex;
-      
+
       while (count > (32 - streamFieldBitIndex) && StreamIndex < (ImageStreamLength >> 2))
       {
         data = (data << (int)(32 - streamFieldBitIndex)) | (streamField >> streamFieldBitIndex);
-        
+
         count -= 32 - streamFieldBitIndex;
-        
+
         streamField = makeIntFromBytes(stream, StreamIndex * 4); //BitConverter.ToUInt32(stream, StreamIndex * 4);
         streamFieldBitIndex = 0;
       }
-      
+
       if (count > 0)
       {
         data = (data << count) | (streamField >> (32 - count));
       }
-      
+
       return data;
     }
-    
+
     unsigned int ReadStreamData(int count)
     {
       unsigned int data = 0;
-      
-      
+
+
       while (count > (32 - StreamFieldBitIndex))
       {
         data = (data << (int)(32 - StreamFieldBitIndex)) | (StreamField >> StreamFieldBitIndex);
-        
+
         count -= 32 - StreamFieldBitIndex;
-        
+
         StreamField = makeIntFromBytes(ImageStream, StreamIndex * 4); //BitConverter.ToUInt32(ImageStream, StreamIndex * 4);
         StreamFieldBitIndex = 0;
         StreamIndex++;
       }
-      
+
       if (count > 0)
       {
         data = (data << count) | (StreamField >> (32 - count));
-        
+
         StreamField <<= count;
         StreamFieldBitIndex += count;
       }
-      
+
       return data;
     }
     ////////////////////////////////////////////////////////////////////
-    
+
     void DecodeFieldBytes(int& run, int& level, bool& last)
     {
       unsigned int streamCode = 0;
-      
+
       int streamLength = 0; ;
       int zeroCount = 0;
       int temp = 0;
       int sign = 0;
-      
-      //Use the RLE and Huffman dictionaries to understand this code fragment. You can find 
+
+      //Use the RLE and Huffman dictionaries to understand this code fragment. You can find
       //them in the developers guide on page 34.
       //The bits in the data are actually composed of two kinds of fields:
       // - run fields - this field contains information on the number of consecutive zeros.
       // - level fields - this field contains the actual non zero value which can be negative or positive.
       //First we extract the run field info and then the level field info.
-      
+
       streamCode = PeekStreamData(ImageStream, 32);
-      
-      
+
+
       //Suppose we have following bit sequence:
       //00001111.....
       // 1 - Count the number of leading zeros -> 4
       //     Coarse value lookup is thus 00001
       // 2 - Lookup the additional value, for coarse value 00001 this is 3 addtional bits
       // 3 - Calculate value of run, for coarse value 00001 this is (111) + 8
-      
+
       zeroCount = CountLeadingZeros(streamCode); // - (1)
       streamCode <<= zeroCount + 1; // - (2) -> shift left to get rid of the coarse value
       streamLength += zeroCount + 1; // - position bit pointer to keep track off how many bits to consume later on the stream.
-      
+
       if (zeroCount > 1)
       {
         temp = (int)(streamCode >> (32 - (zeroCount - 1))); // - (2) -> shift right to determine the addtional bits (number of additional bits is zerocount - 1)
@@ -1427,20 +1427,20 @@ namespace ARDrone
       {
         run = zeroCount;
       }
-      
-      
-      
+
+
+
       //Suppose we have following bit sequence:
       //000011111.....
       // 1 - Count the number of leading zeros -> 4
       //     Coarse value lookup is thus 00001
       // 2 - Lookup the additional value, for coarse value 00001 this is 4 addtional bits (last bit is sign bit)
       // 3 - Calculate value of run, for coarse value 00001 this is (xxx) + 8, multiply by sign
-      
+
       zeroCount = CountLeadingZeros(streamCode);
       streamCode <<= zeroCount + 1; // - (1)
       streamLength += zeroCount + 1; // - position bit pointer to keep track off how many bits to consume later on the stream.
-      
+
       if (zeroCount == 1)
       {
         //If coarse value is 01 according to the Huffman dictionary this means EOB, so there is
@@ -1455,12 +1455,12 @@ namespace ARDrone
           zeroCount = 1;
           temp = 1;
         }
-        
+
         streamLength += zeroCount;// - position bit pointer to keep track off how many bits to consume later on the stream.
         streamCode >>= (32 - zeroCount);// - (2) -> shift right to determine the addtional bits (number of additional bits is zerocount)
-        //sign = (sbyte)(streamCode & 1); // determine sign, last bit is sign 
-        sign = (int)(streamCode & 1); // determine sign, last bit is sign 
-        
+        //sign = (sbyte)(streamCode & 1); // determine sign, last bit is sign
+        sign = (int)(streamCode & 1); // determine sign, last bit is sign
+
         if (zeroCount != 0)
         {
           //temp = (sbyte)(streamCode >> 1); // take into account that last bit is sign, so shift it out of the way
@@ -1468,15 +1468,15 @@ namespace ARDrone
           temp = (int)(streamCode >> 1); // take into account that last bit is sign, so shift it out of the way
           temp += (int)(1 << (zeroCount - 1)); // - (3) -> calculate run value without sign
         }
-        
+
         level = (sign == 1) ? -temp : temp; // - (3) -> calculate run value with sign
         last = false;
       }
-      
-      
+
+
       ReadStreamData(streamLength);
     }
-    
+
     /////////////////////////////////////////////////////////////////
     void ClearDataBuffer()
     {
@@ -1490,19 +1490,19 @@ namespace ARDrone
       int zigZagPosition = 0;
       int matrixPosition = 0;
       bool last = false;
-      
+
       ::memset(dataBlockBuffer, 0, 64 * sizeof(short));//Array.Clear(dataBlockBuffer, 0, dataBlockBuffer.Length);
-      
+
       unsigned int dcCoefficient = ReadStreamData(10);
-      
+
       if (QuantizerMode == CONST_TableQuantization)
       {
         dataBlockBuffer[0] = (short)(dcCoefficient * quantizerValues[0]);
-        
+
         if (acCoefficientsAvailable)
         {
           DecodeFieldBytes(run, level, last);
-          
+
           while (!last)
           {
             zigZagPosition += run + 1;
@@ -1520,19 +1520,19 @@ namespace ARDrone
         //::printf("Constant quantizer mode is not yet implemented.\n");
       }*/
     }
-    
+
     ///////////////////////////////////////////////////////////////////////////////////
     void ReadHeader()
     {
       unsigned int code = 0;
       unsigned int startCode = 0;
-      
+
       AlignStreamData();
-      
+
       code = ReadStreamData(22);
-      
+
       startCode = (unsigned int)(code & ~0x1F);
-      
+
       if (startCode == 32)
       {
         if (((code & 0x1F) == 0x1F))
@@ -1548,7 +1548,7 @@ namespace ARDrone
             PictureType = (int)ReadStreamData(3);
             QuantizerMode = (int)ReadStreamData(5);
             FrameIndex = (int)ReadStreamData(32);
-            
+
             switch (PictureFormat)
             {
               case kPictureFormatCIF: // (int)PictureFormats.Cif:
@@ -1560,20 +1560,20 @@ namespace ARDrone
                 Height = CONST_HeightVga << Resolution - 1;
                 break;
             }
-            
+
             //We assume two bytes per pixel (RGB 565)
             PixelRowSize = Width << 1;
-            
+
             SliceCount = Height >> 4;
             BlockCount = Width >> 4;
-            
-            
+
+
             if(ImageSlice.MacroBlocks.size() != BlockCount)
             {
               ImageSlice.setSize(BlockCount); // = new ImageSlice(BlockCount);
               PixelData.resize(Width * Height); // = new ushort[Width * Height];
             }
-            
+
           }
           else
           {
@@ -1591,84 +1591,84 @@ namespace ARDrone
       bool blockY3HasAcComponents = false;
       bool blockCbHasAcComponents = false;
       bool blockCrHasAcComponents = false;
-      
-      //Set StreamFieldBitIndex to 32 to make sure that the first call to ReadStreamData 
+
+      //Set StreamFieldBitIndex to 32 to make sure that the first call to ReadStreamData
       //actually consumes data from the stream
       StreamFieldBitIndex = 32;
       StreamField = 0;
       StreamIndex = 0;
       SliceIndex = 0;
       PictureComplete = false;
-      
-      
+
+
       while (!PictureComplete && StreamIndex < (ImageStreamLength >> 2))
       {
         ReadHeader();
-        
+
         if (!PictureComplete)
         {
           for (int count = 0; count < BlockCount; count++)
           {
             unsigned int macroBlockEmpty = ReadStreamData(1);
-            
+
             if (macroBlockEmpty == 0)
             {
               unsigned int acCoefficients = ReadStreamData(8);
-              
+
               blockY0HasAcComponents = (acCoefficients >> 0 & 1) == 1;
               blockY1HasAcComponents = (acCoefficients >> 1 & 1) == 1;
               blockY2HasAcComponents = (acCoefficients >> 2 & 1) == 1;
               blockY3HasAcComponents = (acCoefficients >> 3 & 1) == 1;
               blockCbHasAcComponents = (acCoefficients >> 4 & 1) == 1;
               blockCrHasAcComponents = (acCoefficients >> 5 & 1) == 1;
-              
+
               if ((acCoefficients >> 6 & 1) == 1)
               {
                 unsigned int quantizerMode = ReadStreamData(2);
                 QuantizerMode = (int)((quantizerMode < 2) ? ~quantizerMode : quantizerMode);
               }
-              
-              
-              
+
+
+
               GetBlockBytes(blockY0HasAcComponents);
               InverseTransform(count, 0);
-              
-              
-              
+
+
+
               GetBlockBytes(blockY1HasAcComponents);
               InverseTransform(count, 1);
-              
-              
-              
+
+
+
               GetBlockBytes(blockY2HasAcComponents);
               InverseTransform(count, 2);
-              
-              
-              
+
+
+
               GetBlockBytes(blockY3HasAcComponents);
               InverseTransform(count, 3);
-              
-              
-              
+
+
+
               GetBlockBytes(blockCbHasAcComponents);
               InverseTransform(count, 4);
-              
-              
-              
+
+
+
               GetBlockBytes(blockCrHasAcComponents);
               InverseTransform(count, 5);
-              
+
             }
           }
-          
+
           ComposeImageSlice();
         }
       }
     }
     ////////////////////////////////////////////////
-    
-     
-        
+
+
+
     bool decodeImage(unsigned char* stream, unsigned int streamLength, ARDrone::VideoDecoder::Image& resultImage)
     {
       Width = Height = -1;
@@ -1677,15 +1677,15 @@ namespace ARDrone
       ProcessStream();
       resultImage.width = Width;
       resultImage.height = Height;
-      
+
       if(-1 != Width && -1 != Height)
       {
         unsigned short red_mask = 0xF800;
         unsigned short green_mask = 0x7E0;
         unsigned short blue_mask = 0x1F;
-        
+
         int length = Width * Height;
-        for(int i = 0, j = 0; i < length; i++, j+=3)
+        for(int i = 0, j = 0; i < length; i++, j += 3)
         {
           unsigned short w = PixelData[i];
           unsigned char red = (PixelData[i] & red_mask) >> 11;
@@ -1694,17 +1694,18 @@ namespace ARDrone
           resultImage.data[j] = red << 3;
           resultImage.data[j+1] = green << 2;
           resultImage.data[j+2] = blue << 3;
-        }  
+          //::printf("%i %i %i ", (unsigned char)resultImage.data[j], (unsigned char)resultImage.data[j+1], (unsigned char)resultImage.data[j+2]);
+        }
         return true;
       }
-      else 
+      else
       {
         ::printf("image decoding FAIL!!");
         return false;
       }
     }
   }// namespace VideoDecoder
-  
+
 } // namespace ARDrone
 
 

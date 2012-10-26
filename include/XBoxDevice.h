@@ -8,6 +8,7 @@
 
 namespace fireparrot
 {
+    class GLRenderFrame;
     /**
      * This is an interface for the XBox 360 controller, using the gamepad
      * library by 'elanthis' <https://github.com/elanthis/gamepad>
@@ -23,12 +24,13 @@ namespace fireparrot
     class XBoxDevice : public InputDevice
     {
     private:
+        GLRenderFrame *m_renderFrame;
 
     protected:
         virtual void PollInput();
         virtual void ProcessVideo();
         virtual void TrackSensors();
-        
+
     public:
         XBoxDevice() throw(DroneException);
         virtual ~XBoxDevice();
