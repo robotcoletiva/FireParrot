@@ -18,6 +18,7 @@ LINK_DIRECTORIES (${fireparrot_BINARY_DIR}/libopendrone)
 
 SET(DRONE_VERSION_MAJOR 1)
 SET(DRONE_VERSION_MINOR 1)
+SET(DRONE_CODENAME      \"mach\")
 
 SET(DRONE_HEADERS   include/DroneConfig.h
                     include/Common.h

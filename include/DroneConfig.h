@@ -3,3 +3,4 @@
 // Version numbers (major.minor)
 #define DRONE_VERSION_MAJOR 1
 #define DRONE_VERSION_MINOR 1
+#define DRONE_CODENAME      "mach"

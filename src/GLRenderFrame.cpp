@@ -52,7 +52,11 @@ namespace fireparrot
         {
             throw DroneException("Unable to open gl window");
         }
-        glfwSetWindowTitle("FireParrot");
+        char nameBuf[32];
+        sprintf(nameBuf, "FireParrot v%i.%i - %s", DRONE_VERSION_MAJOR,
+            DRONE_VERSION_MINOR, DRONE_CODENAME);
+        printf(nameBuf);
+        glfwSetWindowTitle(nameBuf);
         // Setup ortho view for 2d
         GLint iViewport[4];
         glGetIntegerv(GL_VIEWPORT, iViewport);
