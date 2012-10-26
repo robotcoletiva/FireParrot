@@ -770,7 +770,7 @@ namespace ARDrone
     try
     {
       myCommunicationChannel.connectWithDroneAtAddress(myDroneAddress.c_str(), kOnBoardVideoPort);
-      myCommunicationChannel.setTimeout(3000);
+      myCommunicationChannel.setTimeout(200);
       myController->disableAdaptiveVideo();
       unsigned char trigger[4] = {0x01, 0x00, 0x00, 0x00};
       myCommunicationChannel.send(trigger, 4);
@@ -781,12 +781,11 @@ namespace ARDrone
         try
         {
 
-          synchronized(myMutex)
+          synchronized(vidMutex)
           {
             videoDataLength = 921600;
             myCommunicationChannel.receive(myVideoData, videoDataLength);
             //::printf("vd length--> %d\n", videoDataLength);
-            //::Thread::sleep(20);
           }
         }
         catch (ccxx::TimeoutException& timeoutEx)
@@ -797,6 +796,7 @@ namespace ARDrone
         {
           std::cout << "VideoDataReceiver exception thrown.." << ex.what() << std::endl;
         }
+        ccxx::Thread::sleep(1000/30);
       }//while
     }
     catch (ccxx::Exception& ex)
@@ -809,7 +809,7 @@ namespace ARDrone
 
   void VideoDataReceiver::copyDataTo(ARDrone::VideoDecoder::Image& resultImage)
   {
-    synchronized(myMutex)
+    synchronized(vidMutex)
     {
       ARDrone::VideoDecoder::decodeImage(myVideoData, videoDataLength, resultImage);
       //::printf("%d, %d\n", resultImage.width, resultImage.height);

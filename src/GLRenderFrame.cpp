@@ -52,6 +52,7 @@ namespace fireparrot
         {
             throw DroneException("Unable to open gl window");
         }
+        glfwSetWindowTitle("FireParrot");
         // Setup ortho view for 2d
         GLint iViewport[4];
         glGetIntegerv(GL_VIEWPORT, iViewport);
@@ -69,6 +70,8 @@ namespace fireparrot
         glDisable(GL_BLEND);
         glDisable(GL_DEPTH_TEST);
 
+        glEnable(GL_TEXTURE_2D);
+
         // Setup gl texture
         glGenTextures(1, (GLuint*)&m_textureId);
         glBindTexture(GL_TEXTURE_2D, m_textureId);
@@ -82,18 +85,18 @@ namespace fireparrot
                 continue;
             }
             m_updatedFlag = false;
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_renderFrame.width, m_renderFrame.height, 0, GL_RGB, GL_UNSIGNED_BYTE, m_renderFrame.data);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_renderFrame.width, m_renderFrame.height, 0, GL_RGB, GL_UNSIGNED_BYTE, (unsigned char*)m_renderFrame.data);
 
             glClear(GL_COLOR_BUFFER_BIT);
             glColor3f(1.0f, 1.0f, 1.0f);
             glBegin(GL_QUADS);
-            glTexCoord2f(0, 480);
-            glVertex2f(0, 0);
-            glTexCoord2f(640, 480);
-            glVertex2f(640, 0);
-            glTexCoord2f(640, 0);
-            glVertex2f(640, 480);
             glTexCoord2f(0, 0);
+            glVertex2f(0, 0);
+            glTexCoord2f(1, 0);
+            glVertex2f(640, 0);
+            glTexCoord2f(1, 1);
+            glVertex2f(640, 480);
+            glTexCoord2f(0, 1);
             glVertex2f(0, 480);
             glEnd();
             glfwSwapBuffers();

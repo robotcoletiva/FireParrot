@@ -8,6 +8,7 @@ namespace fireparrot
         m_videoReceiver = new ARDrone::VideoDataReceiver(&m_controller, ipAddr.c_str());
 
         m_droneFeedback = new DroneFeedback;
+        m_droneFeedback->videoFrame.data = new unsigned char[640*480*3];
 
         m_controller.requestNavigationData();
         m_controller.requestVideoData();
@@ -21,6 +22,7 @@ namespace fireparrot
         m_videoReceiver->stop();
         m_navdataReceiver->stop();
 
+        delete m_droneFeedback->videoFrame.data;
         delete m_droneFeedback;
 
         delete m_videoReceiver;
@@ -47,8 +49,9 @@ namespace fireparrot
         //m_droneFeedback->videoFrame.assign(frame.data, frame.width, frame.height, 1, 3);
         m_droneFeedback->videoFrame.width = frame.width;
         m_droneFeedback->videoFrame.height = frame.height;
-        m_droneFeedback->videoFrame.data = frame.data;
-        printf("%i %i\n", frame.width, frame.height);
+        if (frame.width > 0 && frame.height > 0) {
+            memcpy(m_droneFeedback->videoFrame.data, frame.data, frame.width*frame.height*3);
+        }
         return m_droneFeedback;
     }
 

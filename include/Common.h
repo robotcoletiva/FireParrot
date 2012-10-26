@@ -54,14 +54,14 @@ namespace fireparrot
     {
         int width;
         int height;
-        void* data;
+        unsigned char* data;
     };
     /**
      * Contains all the relevant feedback data from the drone
      */
     struct DroneFeedback
     {
-        float altitude;                 /*!< The current altitude of the drone */ 
+        float altitude;                 /*!< The current altitude of the drone */
         vec3_t flightDynamics;          /*!< The current flight dynamics (pitch,yaw,roll) of the drone */
         vec3_t speed;                   /*!< Speed in the x,y,z dirs */
         unsigned int batteryLevel;      /*!< Current battery level of the drone */

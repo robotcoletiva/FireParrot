@@ -15,42 +15,42 @@ namespace ARDrone
   class ccxx::DatagramSocket;
   class ccxx::Mutex;
   class ccxx::Thread;
-  
+
   struct NavigationData
   {
     enum eControlState
     {
-      eDEFAULT = 0, 
-      eINIT = 1, 
+      eDEFAULT = 0,
+      eINIT = 1,
       eLANDED = 2,
-      eFLYING = 3, 
-      eHOVERING= 4, 
-      eTEST = 5, 
-      eTAKEOFF = 6, 
-      eGOTOFIX = 7, 
+      eFLYING = 3,
+      eHOVERING= 4,
+      eTEST = 5,
+      eTAKEOFF = 6,
+      eGOTOFIX = 7,
       eLANDING = 8
     };
-    
+
     enum eControlAlgorithm
     {
       eEulerAnglesControl=0, eAugularSpeedControl=1
     };
-    
-    
+
+
     struct Orientation
     {
       float pitch;
       float roll;
       float yaw;
     };
-    
+
     struct Speed
     {
       float vx;
       float vy;
       float vz;
     };
-    
+
     struct VisionTag
     {
       int type;
@@ -60,7 +60,7 @@ namespace ARDrone
       int height;
       int distance;
     };
-    
+
     unsigned int                                 batteryLevel;
     float                                        altitude;
     ARDrone::NavigationData::Orientation         orientation;
@@ -73,7 +73,7 @@ namespace ARDrone
     bool          videoEnabled;
     bool          visionEnabled;
     bool          altitudeControlActive;
-    bool          userFeedbackOn;           
+    bool          userFeedbackOn;
     bool          controlReceived;
     bool          trimReceived;
     bool          trimRunning;
@@ -99,9 +99,9 @@ namespace ARDrone
     bool          ADCWatchdogDelayed;
     bool          communicationProblemOccurred;
     bool          emergency;
-    
+
     int           sequence;
-    
+
     const char* controlStateToString(eControlState cs)
     {
       switch(cs)
@@ -116,78 +116,79 @@ namespace ARDrone
         case  eGOTOFIX: return "GOTOFIX";
         case  eLANDING: return "LANDING";
       }
-      
+
       return "DONT KNOW";
     }
-    
+
     const char* controlStateAsString()
     {
       return controlStateToString(controlState);
     }
-    
+
     const char* visionTagAsString()
     {
       return NULL;
     }
   };
 
-  struct ATCommand 
+  struct ATCommand
   {
     std::string strCommandHeader;
     std::string strCommandData;
   };
-  
+
   class CommunicationChannel
   {
     ccxx::DatagramSocket myDatagram;
     ccxx::Mutex myMutex;
-    
+    ccxx::Mutex vidMutex;
+
   public:
     CommunicationChannel();
     ~CommunicationChannel();
-    
+
     void connectWithDroneAtAddress(const char* szDroneIpAddress, int iPort);
     void disconnectFromDrone();
     bool isConnectedWithDrone();
-    
+
     void setTimeout(int t);
-    
+
     void send(unsigned char* bytes, unsigned int length);
     void receive(unsigned char* bytes, unsigned int& bufferLength);
 
     void sendAT(const char* szHeader, const char* szDetail, unsigned int mssleep=100);
-    
+
     unsigned int nextATSequence();
     ARDrone::ATCommand lastATCommand();
   };
-  
+
   class Controller
   {
     ARDrone::CommunicationChannel myCommunicationChannel;
   public:
     Controller();
     ~Controller();
-    
+
     void connectWithDroneAtAddress(const char* szDroneIpAddress);
-    
+
     void takeOff();
     void land();
     void hover();
-    
+
     void requestNavigationData();
     void requestVideoData();
     void disableAdaptiveVideo();
-    
+
     void switchToFrontCamera();
     void switchToDownCamera();
-    
+
     void sendControlParameters(int enable, float pitch, float roll, float yaw, float gaz);
     void sendWatchDogReset();
     void sendFlatTrim();
     void sendEmergencyShutdown();
     void sendLastCommand();
   };
-  
+
   class NavigationDataReceiver :public ccxx::Thread
   {
     ARDrone::CommunicationChannel myCommunicationChannel;
@@ -198,7 +199,7 @@ namespace ARDrone
   public:
     NavigationDataReceiver(ARDrone::Controller* pController, const char* szDroneIpAddress);
     ~NavigationDataReceiver() throw ();
-    
+
     void copyDataTo(ARDrone::NavigationData& data);
   protected:
     void run();
@@ -207,8 +208,8 @@ namespace ARDrone
     bool parseNavigation(MemoryLibrary::Buffer& buffer, int offset);
     bool parseVision(MemoryLibrary::Buffer& buffer, int offset);
   };
-  
-  
+
+
   namespace VideoDecoder
   {
     struct Image
@@ -217,14 +218,14 @@ namespace ARDrone
       int width;
       int height;
     };
-    
+
     bool decodeImage(unsigned char* stream, unsigned int streamLength, ARDrone::VideoDecoder::Image& resultImage);
   }  //namespace VideoDecoder
-  
+
   class VideoDataReceiver :public ccxx::Thread
   {
     ARDrone::CommunicationChannel myCommunicationChannel;
-    ccxx::Mutex myMutex;
+    ccxx::Mutex vidMutex;
     std::string myDroneAddress;
     ARDrone::Controller* myController;
     unsigned char myVideoData[921600]; //640x480x3 MAX out
@@ -232,29 +233,29 @@ namespace ARDrone
   public:
     VideoDataReceiver(ARDrone::Controller* pController, const char* szDroneIpAddress);
     ~VideoDataReceiver() throw ();
-    
-    void copyDataTo(ARDrone::VideoDecoder::Image& resultImage); 
+
+    void copyDataTo(ARDrone::VideoDecoder::Image& resultImage);
   protected:
     void run();
-  }; 
-  
+  };
+
   class Drone
   {
     ARDrone::Controller* myController;
     ARDrone::VideoDataReceiver* myVideoDataReceiver;
     ARDrone::NavigationDataReceiver* myNavigationDataReceiver;
-    
+
   public:
     Drone();
     ~Drone();
-    
+
     bool start();
     void stop();
-    
+
     ARDrone::Controller& controller();
     ARDrone::VideoDataReceiver& videoDataReceiver();
     ARDrone::NavigationDataReceiver& navigationDataReceiver();
   };
-  
-  
+
+
 }//namespace ARDrone
