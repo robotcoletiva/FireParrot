@@ -4,11 +4,15 @@
 // and droneController http://dronecontroller.codeplex.com/
 
 #include <commonc++/DatagramSocket.h++>
+#include <commonc++/StreamSocket.h++>
 #include <commonc++/Mutex.h++>
 #include <commonc++/Thread.h++>
 #include <string>
 #include <vector>
 #include "MemoryLibrary.h"
+
+//#define VIDMEMSIZE 921600  // 640x480x3
+#define VIDMEMSIZE 2764800 // 1280x720x3
 
 namespace ARDrone
 {
@@ -161,7 +165,29 @@ namespace ARDrone
     unsigned int nextATSequence();
     ARDrone::ATCommand lastATCommand();
   };
+  class TCPCommunicationChannel
+  {
+    ccxx::StreamSocket mySocket;
+    ccxx::Mutex myMutex;
+    
+  public:
+    TCPCommunicationChannel();
+    ~TCPCommunicationChannel();
+    
+    void connectWithDroneAtAddress(const char* szDroneIpAddress, int iPort);
+    void disconnectFromDrone();
+    bool isConnectedWithDrone();
+    
+    void setTimeout(int t);
+    
+    void send(unsigned char* bytes, unsigned int length);
+    void receive(unsigned char* bytes, unsigned int& bufferLength);
 
+    void sendAT(const char* szHeader, const char* szDetail, unsigned int mssleep=100);
+    
+    unsigned int nextATSequence();
+    ARDrone::ATCommand lastATCommand();
+  }; 
   class Controller
   {
     ARDrone::CommunicationChannel myCommunicationChannel;
@@ -214,7 +240,7 @@ namespace ARDrone
   {
     struct Image
     {
-      unsigned char data[921600]; //640x480x3 MAX out
+      unsigned char data[VIDMEMSIZE]; //640x480x3 MAX out
       int width;
       int height;
     };
@@ -224,11 +250,11 @@ namespace ARDrone
 
   class VideoDataReceiver :public ccxx::Thread
   {
-    ARDrone::CommunicationChannel myCommunicationChannel;
-    ccxx::Mutex vidMutex;
+    ARDrone::TCPCommunicationChannel myCommunicationChannel;
+    ccxx::Mutex myMutex;
     std::string myDroneAddress;
     ARDrone::Controller* myController;
-    unsigned char myVideoData[921600]; //640x480x3 MAX out
+    unsigned char myVideoData[VIDMEMSIZE]; //640x480x3 MAX out
     unsigned int videoDataLength;
   public:
     VideoDataReceiver(ARDrone::Controller* pController, const char* szDroneIpAddress);

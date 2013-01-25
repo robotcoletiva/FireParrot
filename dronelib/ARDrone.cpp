@@ -285,7 +285,90 @@ namespace ARDrone
       return myLastATCommand;
     }
   }
+  //////////////////////////////////////////////////
+  TCPCommunicationChannel::TCPCommunicationChannel()
+  {
+    myNextATSequence = 1;
+    myLastATSequence = 1;
+    mySocket.init();
+  }
+  
+  TCPCommunicationChannel::~TCPCommunicationChannel()
+  {
+    disconnectFromDrone();
+  }
+  
+  void TCPCommunicationChannel::connectWithDroneAtAddress(const char* szDroneIpAddress, int iPort)
+  {
+    ccxx::String strAddr(szDroneIpAddress);
+    mySocket.connect(strAddr, iPort);
+    mySocket.setTimeout(3000);
+  }
+  
+  void TCPCommunicationChannel::disconnectFromDrone()
+  {
+    if(isConnectedWithDrone())
+    {
+      mySocket.shutdown();
+    }
+  }
+  
+  void TCPCommunicationChannel::setTimeout(int t)
+  {
+    mySocket.setTimeout(t);
+  }
+  
+  bool TCPCommunicationChannel::isConnectedWithDrone()
+  {
+    return mySocket.isConnected();
+  }
+  
+  void TCPCommunicationChannel::send(unsigned char* bytes, unsigned int length)
+  {
+    synchronized(myMutex)
+    {
+      mySocket.writeFully(bytes, length);
+    }
+  }
+  
+  void TCPCommunicationChannel::receive(unsigned char* bytes, unsigned int& bufferLength)
+  {  
+    int actualReceivedLength = mySocket.read(bytes, bufferLength);
+    bufferLength = actualReceivedLength;
+  }
+  
+  void TCPCommunicationChannel::sendAT(const char* szHeader, const char* szDetail, unsigned int mssleep)
+  {
+    //synchronized(myMutex)
+    {
+      std::stringstream strStm;
+      strStm << szHeader << nextATSequence() << szDetail << '\r';
+      std::string strATCmd = strStm.str();
+      myLastATCommand.strCommandHeader = szHeader;
+      myLastATCommand.strCommandData = szDetail;
+      //std::cout << "Sending AT command -> " << strATCmd << std::endl;
+      mySocket.writeFully((unsigned char*)strATCmd.c_str(), strATCmd.length());
+      if(mssleep > 0)
+        ccxx::Thread::sleep(mssleep);
+    }
+  }
+  
 
+  unsigned int TCPCommunicationChannel::nextATSequence()
+  {
+    synchronized(myMutex)
+    {
+      return myNextATSequence++;
+    }
+  }
+  
+  ARDrone::ATCommand TCPCommunicationChannel::lastATCommand()
+  {
+    synchronized(myMutex)
+    {
+      return myLastATCommand;
+    }
+  }
   //////////////////////////////////////////////////
   Controller::Controller()
   {
@@ -308,6 +391,7 @@ namespace ARDrone
     myCommunicationChannel.sendAT("AT*CONFIG=", ",\"control:control_level\",\"0\""); //0:BEGINNER, 1:ACE, 2:MAX
     myCommunicationChannel.sendAT("AT*CONFIG=", ",\"general:navdata_demo\",\"TRUE\"");
     myCommunicationChannel.sendAT("AT*CONFIG=", ",\"general:video_enable\",\"TRUE\"");
+    myCommunicationChannel.sendAT("AT*CONFIG=", ",\"video::video_codec\",\"129\"");
     disableAdaptiveVideo();
     //myCommunicationChannel.sendAT("AT*CONFIG=", ",\"network:owner_mac\",\"00:18:DE:9D:E9:5D\""); //my PC
     //myCommunicationChannel.sendAT("AT*CONFIG=", ",\"network:owner_mac\",\"00:23:CD:5D:92:37\""); //AP
@@ -333,6 +417,7 @@ namespace ARDrone
   void Controller::requestVideoData()
   {
     myCommunicationChannel.sendAT("AT*CONFIG=", ",\"general:video_enable\",\"TRUE\"", 10);
+    myCommunicationChannel.sendAT("AT*CONFIG=", ",\"video::video_codec\",\"129\"");
   }
 
   void Controller::sendFlatTrim()
@@ -605,10 +690,9 @@ namespace ARDrone
   {
     int offset = 0;
     int header = buffer.MakeValueFromOffset<int32_t>(offset);
-    if(header != 0x55667788)
-    {
-      std::cout << "NavigationDataReceiver FAIL, because the header != 0x55667788\n";
-      return false;
+    if(header != 0x55667788 && header != 0x55667789) {
+	std::cout << "Unknown ARDrone version: " << header << std::endl;
+	return false;
     }
 
     offset += 4;
@@ -769,39 +853,39 @@ namespace ARDrone
     std::cout << "VideoDataReceiver started\n";
     try
     {
+      std::cout << "Attempting to open video stream on " << myDroneAddress << ":" << kOnBoardVideoPort << std::endl;
       myCommunicationChannel.connectWithDroneAtAddress(myDroneAddress.c_str(), kOnBoardVideoPort);
       myCommunicationChannel.setTimeout(200);
       myController->disableAdaptiveVideo();
       unsigned char trigger[4] = {0x01, 0x00, 0x00, 0x00};
       myCommunicationChannel.send(trigger, 4);
-
       myController->requestVideoData();
       while(false == testCancel())
       {
         try
         {
 
-          synchronized(vidMutex)
+          synchronized(myMutex)
           {
-            videoDataLength = 921600;
+            videoDataLength = VIDMEMSIZE;
             myCommunicationChannel.receive(myVideoData, videoDataLength);
             //::printf("vd length--> %d\n", videoDataLength);
           }
         }
         catch (ccxx::TimeoutException& timeoutEx)
         {
-          std::cout << "VideoDataReceiver TIMEOUT exception thrown.." << timeoutEx.what() << std::endl;
+          std::cout << "VideoDataReceiver TIMEOUT exception thrown.. " << timeoutEx.what() << std::endl;
         }
         catch (ccxx::Exception& ex)
         {
-          std::cout << "VideoDataReceiver exception thrown.." << ex.what() << std::endl;
+          std::cout << "VideoDataReceiver exception thrown.. " << ex.what() << std::endl;
         }
         ccxx::Thread::sleep(1000/30);
       }//while
     }
     catch (ccxx::Exception& ex)
     {
-      std::cout << "VideoDataReceiver exception thrown.." << ex.what() << std::endl;
+      std::cout << "VideoDataReceiver exception thrown when connecting.. " << ex.what() << std::endl;
     }
 
     std::cout << "VideoDataReceiver stopped\n";
@@ -809,7 +893,7 @@ namespace ARDrone
 
   void VideoDataReceiver::copyDataTo(ARDrone::VideoDecoder::Image& resultImage)
   {
-    synchronized(vidMutex)
+    synchronized(myMutex)
     {
       ARDrone::VideoDecoder::decodeImage(myVideoData, videoDataLength, resultImage);
       //::printf("%d, %d\n", resultImage.width, resultImage.height);
