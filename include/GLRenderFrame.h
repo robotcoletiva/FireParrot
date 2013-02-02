@@ -2,12 +2,9 @@
 #define GL_RENDER_FRAME_H
 
 #include <Common.h>
-#include <CImg.h>
 
 #include <thread>
 #include <functional>
-
-using namespace cimg_library; 
 
 namespace fireparrot
 {
@@ -40,11 +37,11 @@ namespace fireparrot
         bool m_running;
         /**
          * Texture id of our opengl texture
-         */ 
+         */
         int m_textureId;
         /**
          * The currently rendering frame
-         */ 
+         */
         DroneFrame m_renderFrame;
         /**
          * The thread our render loop is running on
@@ -54,6 +51,8 @@ namespace fireparrot
          * The main render loop
          */
         void RenderLoop();
+
+        bool m_updatedFlag;
 
     public:
         GLRenderFrame(int width, int height, bool fullscreen = false) throw (DroneException);
@@ -76,7 +75,7 @@ namespace fireparrot
          * Update the currently rendering frame
          * \param img A copy of the DroneFrame struct containing the image
          */
-        void UpdateFrame(DroneFrame img);        
+        void UpdateFrame(DroneFrame img);
     };
 }
 

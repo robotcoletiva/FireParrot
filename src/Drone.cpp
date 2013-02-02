@@ -6,21 +6,23 @@ namespace fireparrot
         m_controller.connectWithDroneAtAddress(ipAddr.c_str());
         m_navdataReceiver = new ARDrone::NavigationDataReceiver(&m_controller, ipAddr.c_str());
         m_videoReceiver = new ARDrone::VideoDataReceiver(&m_controller, ipAddr.c_str());
-    
+
         m_droneFeedback = new DroneFeedback;
-        
+        m_droneFeedback->videoFrame.data = new unsigned char[640*480*3];
+
         m_controller.requestNavigationData();
         m_controller.requestVideoData();
-        
+
         m_navdataReceiver->start();
         m_videoReceiver->start();
     }
-    
+
     Drone::~Drone()
     {
         m_videoReceiver->stop();
         m_navdataReceiver->stop();
-        
+
+        delete m_droneFeedback->videoFrame.data;
         delete m_droneFeedback;
 
         delete m_videoReceiver;
@@ -31,10 +33,10 @@ namespace fireparrot
     {
         static ARDrone::NavigationData data;
         static ARDrone::VideoDecoder::Image frame;
-        
+
         // Store feedback and return
         m_navdataReceiver->copyDataTo(data);
-//        m_videoReceiver->copyDataTo(frame);
+        m_videoReceiver->copyDataTo(frame);
 
         m_droneFeedback->altitude = data.altitude;
         m_droneFeedback->batteryLevel = data.batteryLevel;
@@ -44,10 +46,12 @@ namespace fireparrot
         m_droneFeedback->speed[0] = data.speed.vx;
         m_droneFeedback->speed[1] = data.speed.vy;
         m_droneFeedback->speed[2] = data.speed.vz;
-//        m_droneFeedback->videoFrame.assign(frame.data, frame.width, frame.height, 1, 3);
+        //m_droneFeedback->videoFrame.assign(frame.data, frame.width, frame.height, 1, 3);
         m_droneFeedback->videoFrame.width = frame.width;
         m_droneFeedback->videoFrame.height = frame.height;
-        m_droneFeedback->videoFrame.data = frame.data;
+        if (frame.width > 0 && frame.height > 0) {
+            memcpy(m_droneFeedback->videoFrame.data, frame.data, frame.width*frame.height*3);
+        }
         return m_droneFeedback;
     }
 
@@ -82,7 +86,7 @@ namespace fireparrot
             }
         }
         // Send control params
-        m_controller.sendControlParameters(1, p.flightDynamics[FLIGHT_PITCH], 
+        m_controller.sendControlParameters(1, p.flightDynamics[FLIGHT_PITCH],
                 p.flightDynamics[FLIGHT_ROLL], p.flightDynamics[FLIGHT_YAW],
                 p.flightDynamics[FLIGHT_THRUST]);
     }

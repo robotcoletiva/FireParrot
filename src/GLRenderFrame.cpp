@@ -5,11 +5,12 @@
 namespace fireparrot
 {
     GLRenderFrame::GLRenderFrame(int width, int height, bool fullscreen) throw(DroneException):
-            m_frameWidth(width), m_frameHeight(height), m_frameFullscreen(fullscreen), 
-            m_targetFps(30), m_running(false) 
+            m_frameWidth(width), m_frameHeight(height), m_frameFullscreen(fullscreen),
+            m_targetFps(30), m_running(false)
     {
-            }
-    
+
+    }
+
     GLRenderFrame::~GLRenderFrame()
     {
 
@@ -18,10 +19,11 @@ namespace fireparrot
     void GLRenderFrame::StartRender()
     {
         m_running = true;
+        m_updatedFlag = false;
         // Start the render thread
         m_runningThread = std::thread(std::bind(&GLRenderFrame::RenderLoop, this));
     }
-    
+
     void GLRenderFrame::StopRender()
     {
         m_running = false;
@@ -31,6 +33,7 @@ namespace fireparrot
     void GLRenderFrame::UpdateFrame(DroneFrame img)
     {
         m_renderFrame = img;
+        m_updatedFlag = true;
     }
 
     void GLRenderFrame::RenderLoop()
@@ -44,15 +47,20 @@ namespace fireparrot
         {
             mode = GLFW_FULLSCREEN;
         }
-        if (glfwOpenWindow(m_frameWidth, m_frameHeight, 0, 0, 0, 
+        if (glfwOpenWindow(m_frameWidth, m_frameHeight, 0, 0, 0,
                                         8, 0, 0, mode) != GL_TRUE)
         {
             throw DroneException("Unable to open gl window");
         }
+        char nameBuf[32];
+        sprintf(nameBuf, "FireParrot v%i.%i - %s", DRONE_VERSION_MAJOR,
+            DRONE_VERSION_MINOR, DRONE_CODENAME);
+        printf(nameBuf);
+        glfwSetWindowTitle(nameBuf);
         // Setup ortho view for 2d
         GLint iViewport[4];
         glGetIntegerv(GL_VIEWPORT, iViewport);
-        
+
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
         glOrtho(iViewport[0], iViewport[0]+iViewport[2], iViewport[1]
@@ -65,7 +73,9 @@ namespace fireparrot
         glDisable(GL_LIGHTING);
         glDisable(GL_BLEND);
         glDisable(GL_DEPTH_TEST);
-    
+
+        glEnable(GL_TEXTURE_2D);
+
         // Setup gl texture
         glGenTextures(1, (GLuint*)&m_textureId);
         glBindTexture(GL_TEXTURE_2D, m_textureId);
@@ -75,22 +85,26 @@ namespace fireparrot
 
         while (m_running)
         {
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 640, 480, 0, GL_RGB, GL_UNSIGNED_BYTE, m_renderFrame.data);
-            
+            if (!m_updatedFlag) {
+                continue;
+            }
+            m_updatedFlag = false;
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_renderFrame.width, m_renderFrame.height, 0, GL_RGB, GL_UNSIGNED_BYTE, (unsigned char*)m_renderFrame.data);
+
             glClear(GL_COLOR_BUFFER_BIT);
             glColor3f(1.0f, 1.0f, 1.0f);
             glBegin(GL_QUADS);
-            glTexCoord2f(0, 480);
-            glVertex2f(0, 0);
-            glTexCoord2f(640, 480);
-            glVertex2f(640, 0);
-            glTexCoord2f(640, 0);
-            glVertex2f(640, 480);
             glTexCoord2f(0, 0);
+            glVertex2f(0, 0);
+            glTexCoord2f(1, 0);
+            glVertex2f(640, 0);
+            glTexCoord2f(1, 1);
+            glVertex2f(640, 480);
+            glTexCoord2f(0, 1);
             glVertex2f(0, 480);
             glEnd();
             glfwSwapBuffers();
         }
         glfwTerminate();
-    } 
+    }
 }
